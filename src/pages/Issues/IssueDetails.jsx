@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import useAxiosSecure from "../../hooks/useAxiosSecure.jsx";
 import useAuth from "../../hooks/useAuth.jsx";
@@ -7,16 +7,18 @@ import useRole from "../../hooks/useRole.jsx";
 import Swal from "sweetalert2";
 import Loading from "../../components/Loading/Loading.jsx";
 import Timeline from "../../components/Timeline/Timeline.jsx";
+import axios from "axios";
 
 const IssueDetails = () => {
+    const [editData, setEditData] = useState(null);
+    const [imageError, setImageError] = useState("");
     const { id } = useParams();
     const axiosSecure = useAxiosSecure();
     const { user } = useAuth();
     const { role, isPremium, isBlocked } = useRole();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-
-    const [editData, setEditData] = useState(null);
+    const issueModalRef = useRef(null);
 
     const { data, isLoading, refetch } = useQuery({
         queryKey: ["issue-details", id],
@@ -102,7 +104,7 @@ const IssueDetails = () => {
         }
     };
 
-    const handleEditClick = () => {
+    const handleUpdateIssue = () => {
         setEditData({
             title: issue.title,
             description: issue.description,
@@ -110,39 +112,81 @@ const IssueDetails = () => {
             image: issue.image,
             location: issue.location,
         });
-        document.getElementById("edit_issue_modal").showModal();
+        // document.getElementById("edit_issue_modal").showModal();
+        issueModalRef.current.showModal();
     };
+
+    const handlePatchData = async (data) => {
+        await axiosSecure.patch(`/citizen/issues/${id}`, data)
+            .then((res) => {
+                if (res.data.modifiedCount) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Issue updated",
+                        timer: 1500,
+                        showConfirmButton: false,
+                    });
+                    // document.getElementById("edit_issue_modal").close();
+                    issueModalRef.current.close();
+                    setEditData(null);
+                    refetch();
+                }
+            })
+            .catch((error) => {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: `${error.message}`
+                });
+            });
+    }
 
     const handleEditSubmit = async (e) => {
         e.preventDefault();
-        const form = e.target;
-        const updated = {
-            title: form.title.value,
-            description: form.description.value,
-            category: form.category.value,
-            image: form.image.value,
-            location: form.location.value,
-        };
+        setImageError("");
 
-        try {
-            await axiosSecure.patch(`/citizen/issues/${id}`, updated);
-            Swal.fire({
-                icon: "success",
-                title: "Issue updated",
-                timer: 1200,
-                showConfirmButton: false,
-            });
-            document.getElementById("edit_issue_modal").close();
-            setEditData(null);
-            refetch();
-        } catch (error) {
-            Swal.fire({
-                icon: "error",
-                title: "Failed",
-                text:
-                    error.response?.data?.message ||
-                    "Could not update this issue.",
-            });
+        const imageFile = e.target?.image?.files[0];
+        if (imageFile) {
+            if (!imageFile.type.startsWith("image/")) {
+                setImageError("Only image files are allowed");
+                return;
+            }
+
+            // 1. store the image in form data
+            const formData = new FormData();
+            formData.append("image", imageFile);
+
+            // 2. send the image to store and get the URL
+            axios.post(`https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMAGE_HOST_KEY}`, formData)
+                .then(async (res) => {
+                    const photoURL = res.data.data.url;
+
+                    const updatedIssue = {
+                        title: e.target.title.value,
+                        description: e.target.description.value,
+                        category: e.target.category.value,
+                        image: photoURL,
+                        location: e.target.location.value,
+                    };
+
+                    await handlePatchData(updatedIssue);
+                })
+                .catch((error) => {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: `${error.message}`
+                    });
+                });
+        } else {
+            const updatedIssue = {
+                title: e.target.title.value,
+                description: e.target.description.value,
+                category: e.target.category.value,
+                location: e.target.location.value,
+            };
+
+            await handlePatchData(updatedIssue);
         }
     };
 
@@ -251,7 +295,7 @@ const IssueDetails = () => {
 
                                 {canEdit && (
                                     <button
-                                        onClick={handleEditClick}
+                                        onClick={handleUpdateIssue}
                                         className="btn btn-sm btn-outline btn-primary mt-2"
                                     >
                                         Edit (Pending only)
@@ -327,86 +371,68 @@ const IssueDetails = () => {
             </div>
 
             {/* Edit Modal */}
-            <dialog id="edit_issue_modal" className="modal">
+            <dialog ref={issueModalRef} className="modal">
                 <div className="modal-box">
                     <h3 className="font-bold text-lg mb-3">Edit Issue</h3>
                     {editData && (
                         <form onSubmit={handleEditSubmit} className="space-y-3">
+                            {/* report title */}
                             <div>
                                 <label className="label">
                                     <span className="label-text">Title</span>
                                 </label>
-                                <input
-                                    name="title"
-                                    defaultValue={editData.title}
-                                    className="input input-bordered w-full"
-                                    required
-                                />
+                                <input name="title" defaultValue={editData.title} className="input input-bordered w-full" required />
                             </div>
+
+                            {/* description */}
                             <div>
                                 <label className="label">
-                                    <span className="label-text">
-                                        Description
-                                    </span>
+                                    <span className="label-text">Description</span>
                                 </label>
-                                <textarea
-                                    name="description"
-                                    defaultValue={editData.description}
-                                    className="textarea textarea-bordered w-full"
-                                    rows={3}
-                                    required
-                                ></textarea>
+                                <textarea name="description" defaultValue={editData.description} className="textarea textarea-bordered w-full" rows={3} required></textarea>
                             </div>
+
+                            {/* category */}
                             <div>
                                 <label className="label">
-                                    <span className="label-text">
-                                        Category
-                                    </span>
+                                    <span className="label-text">Category</span>
                                 </label>
-                                <input
+                                <select
                                     name="category"
                                     defaultValue={editData.category}
-                                    className="input input-bordered w-full"
-                                    required
-                                />
+                                    className="select select-bordered w-full"
+                                >
+                                    <option value="">Select Category</option>
+                                    <option value="Streetlight">Streetlight</option>
+                                    <option value="Road / Pothole">Road / Pothole</option>
+                                    <option value="Water Leakage">Water Leakage</option>
+                                    <option value="Garbage">Garbage</option>
+                                    <option value="Footpath">Footpath</option>
+                                    <option value="Other">Other</option>
+                                </select>
                             </div>
+
+                            {/* image */}
                             <div>
                                 <label className="label">
-                                    <span className="label-text">
-                                        Image URL
-                                    </span>
+                                    <span className="label-text">Image URL</span>
                                 </label>
-                                <input
-                                    name="image"
-                                    defaultValue={editData.image}
-                                    className="input input-bordered w-full"
-                                />
+                                <input name="image" type="file" className="file-input w-full" />
+                                {
+                                    imageError && <p className="text-red-500">{imageError}</p>
+                                }
                             </div>
+
+                            {/* location */}
                             <div>
                                 <label className="label">
-                                    <span className="label-text">
-                                        Location
-                                    </span>
+                                    <span className="label-text">Location</span>
                                 </label>
-                                <input
-                                    name="location"
-                                    defaultValue={editData.location}
-                                    className="input input-bordered w-full"
-                                />
+                                <input name="location" defaultValue={editData.location} className="input input-bordered w-full" />
                             </div>
 
                             <div className="modal-action">
-                                <button
-                                    type="button"
-                                    onClick={() =>
-                                        document
-                                            .getElementById(
-                                                "edit_issue_modal"
-                                            )
-                                            .close()
-                                    }
-                                    className="btn btn-ghost"
-                                >
+                                <button onClick={() => issueModalRef.current.close()} type="button" className="btn btn-ghost">
                                     Cancel
                                 </button>
                                 <button type="submit" className="btn btn-primary">
