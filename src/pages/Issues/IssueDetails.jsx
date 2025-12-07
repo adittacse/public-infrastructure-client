@@ -48,39 +48,6 @@ const IssueDetails = () => {
     const canDelete = isOwner;
     const canBoost = isOwner && !issue.isBoosted && !isBlocked;
 
-    const handleDelete = async () => {
-        const result = await Swal.fire({
-            icon: "warning",
-            title: "Delete Issue?",
-            text: "This action cannot be undone.",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it",
-        });
-
-        if (!result.isConfirmed) return;
-
-        try {
-            await axiosSecure.delete(`/citizen/issues/${id}`);
-            Swal.fire({
-                icon: "success",
-                title: "Deleted",
-                timer: 1200,
-                showConfirmButton: false,
-            });
-            await queryClient.invalidateQueries(["all-issues"]);
-            navigate("/dashboard/my-issues");
-        } catch (error) {
-            Swal.fire({
-                icon: "error",
-                title: "Failed",
-                text:
-                    error.response?.data?.message ||
-                    "Could not delete this issue.",
-            });
-        }
-    };
-
     const handleBoost = async () => {
         if (!isOwner) return;
 
@@ -190,84 +157,113 @@ const IssueDetails = () => {
         }
     };
 
+    const handleDelete = () => {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await axiosSecure.delete(`/citizen/issues/${id}`)
+                    .then((res) => {
+                        if (res.data.deletedCount) {
+                            Swal.fire({
+                                title: "Deleted!",
+                                text: "Your issue has been deleted.",
+                                icon: "success"
+                            });
+                            navigate("/dashboard/my-issues");
+                        }
+                    })
+                    .catch((error) => {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: `${error.message}`
+                        });
+                    });
+            }
+        });
+    }
+
     return (
         <div className="max-w-5xl mx-auto px-4 py-8">
             <div className="grid lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2">
-                    {issue.image && (
-                        <div className="mb-4">
-                            <img
-                                src={issue.image}
-                                alt={issue.title}
-                                className="w-full h-64 object-cover rounded-md"
+                    {
+                        issue.image && <div className="mb-4">
+                            <img src={issue?.image} alt={issue?.title} className="w-full h-64 object-cover rounded-md"
                             />
                         </div>
-                    )}
+                    }
 
                     <h1 className="text-3xl font-bold mb-2">
-                        {issue.title}
+                        {issue?.title}
                     </h1>
 
                     <div className="flex flex-wrap gap-2 mb-4">
                         <span className="badge badge-outline">
-                            {issue.category}
+                            {issue?.category}
                         </span>
                         <span
                             className={`badge ${
-                                issue.status === "pending"
+                                issue?.status === "pending"
                                     ? "badge-warning"
-                                    : issue.status === "resolved" ||
-                                    issue.status === "closed"
+                                    : issue?.status === "resolved" ||
+                                    issue?.status === "closed"
                                         ? "badge-success"
                                         : "badge-info"
                             }`}
                         >
-                            {issue.status}
+                            {issue?.status}
                         </span>
                         <span
                             className={`badge ${
-                                issue.priority === "high"
-                                    ? "badge-error"
+                                issue?.priority === "high" ? "badge-error"
                                     : "badge-ghost"
                             }`}
                         >
-                            {issue.priority === "high" ? "High Priority" : "Normal Priority"}
+                            {issue?.priority === "high" ? "High Priority" : "Normal Priority"}
                         </span>
                         <span className="badge badge-ghost">
-                            Upvotes: {issue.upvoteCount || 0}
+                            Upvotes: {issue?.upvoteCount || 0}
                         </span>
                     </div>
 
                     <p className="mb-4 text-gray-700">
-                        {issue.description}
+                        {issue?.description}
                     </p>
 
-                    {issue.location && (
-                        <p className="mb-2 text-gray-600">
+                    {
+                        issue?.location && <p className="mb-2 text-gray-600">
                             <span className="font-semibold">
                                 Location:
                             </span>{" "}
-                            {issue.location}
+                            {issue?.location}
                         </p>
-                    )}
+                    }
 
                     <p className="mb-2 text-gray-600 text-sm">
                         Reported by{" "}
                         <span className="font-semibold">
-                            {issue.reporterName || "Citizen"}
+                            {issue?.reporterName || "Citizen"}
                         </span>{" "}
-                        ({issue.reporterEmail})
+                        ({issue?.reporterEmail})
                     </p>
 
-                    {issue.assignedStaffEmail && (
-                        <p className="mb-4 text-gray-600 text-sm">
+                    {
+                        issue?.assignedStaffEmail && <p className="mb-4 text-gray-600 text-sm">
                             <span className="font-semibold">
                                 Assigned Staff:
                             </span>{" "}
-                            {issue.assignedStaffName} (
-                            {issue.assignedStaffEmail})
+                            {issue?.assignedStaffName} (
+                            {issue?.assignedStaffEmail})
                         </p>
-                    )}
+                    }
 
                     {/* Timeline */}
                     <div className="mt-6">
@@ -287,28 +283,22 @@ const IssueDetails = () => {
                                     Your Actions
                                 </h3>
 
-                                {isPremium && (
-                                    <p className="mt-2 text-xs text-green-600">
+                                {
+                                    isPremium && <p className="mt-2 text-xs text-green-600">
                                         You are a premium citizen. Your issues receive priority support.
                                     </p>
-                                )}
+                                }
 
-                                {canEdit && (
-                                    <button
-                                        onClick={handleUpdateIssue}
-                                        className="btn btn-sm btn-outline btn-primary mt-2"
-                                    >
+                                {
+                                    canEdit && <button onClick={handleUpdateIssue} className="btn btn-sm btn-outline btn-primary mt-2">
                                         Edit (Pending only)
                                     </button>
-                                )}
-                                {canDelete && (
-                                    <button
-                                        onClick={handleDelete}
-                                        className="btn btn-sm btn-outline btn-error mt-2"
-                                    >
+                                }
+                                {
+                                    canDelete && <button onClick={handleDelete} className="btn btn-sm btn-outline btn-error mt-2">
                                         Delete Issue
                                     </button>
-                                )}
+                                }
 
                                 {canBoost && (
                                     <>
