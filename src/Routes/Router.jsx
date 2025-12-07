@@ -1,4 +1,3 @@
-import React from "react";
 import { createBrowserRouter } from "react-router";
 import Loading from "../components/Loading/Loading.jsx";
 import RootLayout from "../layouts/RootLayout.jsx";
@@ -7,7 +6,7 @@ import Login from "../pages/Auth/Login/Login.jsx";
 import Register from "../pages/Auth/Register/Register.jsx";
 import PrivateRoute from "./PrivateRoute.jsx";
 import DashboardLayout from "../layouts/DashboardLayout.jsx";
-import DashboardHome from "../pages/Dashboard/DashboardHome/DashboardHome.jsx";
+import CitizenOverview from "../pages/Dashboard/Citizen/CitizenOverview/CitizenOverview.jsx";
 import MyIssues from "../pages/Dashboard/Citizen/MyIssues/MyIssues.jsx";
 import NotFound from "../pages/NotFound/NotFound.jsx";
 
@@ -37,7 +36,7 @@ const Router = createBrowserRouter([
         children: [
             {
                 index: true,
-                element: <DashboardHome />
+                element: <CitizenOverview />
             },
             {
                 path: "my-issues",
