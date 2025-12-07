@@ -6,6 +6,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import useRole from "../../hooks/useRole.jsx";
 import Swal from "sweetalert2";
 import Loading from "../../components/Loading/Loading.jsx";
+import Timeline from "../../components/Timeline/Timeline.jsx";
 
 const IssueDetails = () => {
     const { id } = useParams();
@@ -229,7 +230,7 @@ const IssueDetails = () => {
                         <h2 className="text-xl font-semibold mb-2">
                             Issue Timeline
                         </h2>
-                        {/*<Timeline logs={logs} />*/}
+                        <Timeline logs={logs} />
                     </div>
                 </div>
 
@@ -241,6 +242,13 @@ const IssueDetails = () => {
                                 <h3 className="font-semibold">
                                     Your Actions
                                 </h3>
+
+                                {isPremium && (
+                                    <p className="mt-2 text-xs text-green-600">
+                                        You are a premium citizen. Your issues receive priority support.
+                                    </p>
+                                )}
+
                                 {canEdit && (
                                     <button
                                         onClick={handleEditClick}

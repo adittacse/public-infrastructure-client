@@ -48,7 +48,7 @@ const DashboardLayout = () => {
                     {/* citizen menu */}
                     {
                         role === "citizen" && <>
-                            <NavLink to="/dashboard"
+                            <NavLink end to="/dashboard"
                                 className={({ isActive }) =>
                                     `btn btn-sm btn-block justify-start ${
                                         isActive ? "btn-primary" : "btn-ghost"

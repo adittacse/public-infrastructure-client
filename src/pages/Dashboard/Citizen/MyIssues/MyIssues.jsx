@@ -110,8 +110,8 @@ const MyIssues = () => {
                         issues.map((issue, idx) => <tr key={issue._id}>
                             <td>{idx + 1}</td>
                             <td>{issue?.title}</td>
-                            <td>{issue?.status}</td>
-                            <td>{issue?.priority}</td>
+                            <td className="capitalize">{issue?.status}</td>
+                            <td className="capitalize">{issue?.priority}</td>
                             <td className="space-x-2">
                                 <Link to={`/issues/${issue._id}`} className="btn btn-xs btn-primary">
                                     View
