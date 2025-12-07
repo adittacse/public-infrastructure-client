@@ -9,6 +9,7 @@ import PrivateRoute from "./PrivateRoute.jsx";
 import DashboardLayout from "../layouts/DashboardLayout.jsx";
 import DashboardHome from "../pages/Dashboard/DashboardHome/DashboardHome.jsx";
 import MyIssues from "../pages/Dashboard/Citizen/MyIssues/MyIssues.jsx";
+import NotFound from "../pages/NotFound/NotFound.jsx";
 
 const Router = createBrowserRouter([
     {
@@ -43,6 +44,10 @@ const Router = createBrowserRouter([
                 element: <MyIssues />
             }
         ]
+    },
+    {
+        path: "*",
+        element: <NotFound />
     }
 ]);
 

@@ -1,4 +1,4 @@
-import  {Link, NavLink, Outlet, useNavigate } from "react-router";
+import { Link, NavLink, Outlet, useNavigate } from "react-router";
 import useAuth from "../hooks/useAuth.jsx";
 import useRole from "../hooks/useRole.jsx";
 import Swal from "sweetalert2";
