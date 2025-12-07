@@ -10,6 +10,7 @@ import CitizenOverview from "../pages/Dashboard/Citizen/CitizenOverview/CitizenO
 import MyIssues from "../pages/Dashboard/Citizen/MyIssues/MyIssues.jsx";
 import NotFound from "../pages/NotFound/NotFound.jsx";
 import ReportIssue from "../pages/Dashboard/Citizen/ReportIssue/ReportIssue.jsx";
+import IssueDetails from "../pages/Issues/IssueDetails.jsx";
 
 const Router = createBrowserRouter([
     {
@@ -28,6 +29,11 @@ const Router = createBrowserRouter([
             {
                 path: "register",
                 element: <Register />
+            },
+            {
+                path: "issues/:id",
+                loader: ({ params }) => fetch(`/issues/${params.id}`),
+                element: <PrivateRoute><IssueDetails /></PrivateRoute>
             }
         ]
     },
