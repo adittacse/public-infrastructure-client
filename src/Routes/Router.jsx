@@ -9,6 +9,7 @@ import DashboardLayout from "../layouts/DashboardLayout.jsx";
 import CitizenOverview from "../pages/Dashboard/Citizen/CitizenOverview/CitizenOverview.jsx";
 import MyIssues from "../pages/Dashboard/Citizen/MyIssues/MyIssues.jsx";
 import NotFound from "../pages/NotFound/NotFound.jsx";
+import ReportIssue from "../pages/Dashboard/Citizen/ReportIssue/ReportIssue.jsx";
 
 const Router = createBrowserRouter([
     {
@@ -37,6 +38,10 @@ const Router = createBrowserRouter([
             {
                 index: true,
                 element: <CitizenOverview />
+            },
+            {
+                path: "report-issue",
+                element: <ReportIssue />
             },
             {
                 path: "my-issues",
