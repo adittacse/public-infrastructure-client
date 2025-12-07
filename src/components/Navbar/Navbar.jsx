@@ -1,4 +1,4 @@
-import { Link, NavLink } from "react-router";
+import {Link, NavLink, useNavigate} from "react-router";
 import useAuth from "../../hooks/useAuth.jsx";
 import useRole from "../../hooks/useRole.jsx";
 import Swal from "sweetalert2";
@@ -10,6 +10,7 @@ const Navbar = () => {
     const [theme, setTheme] = useState("light");
     const { user, logOut } = useAuth();
     const { role, isPremium } = useRole();
+    const navigate = useNavigate();
 
     useEffect(() => {
          const saved = localStorage.getItem("app-theme");
@@ -30,6 +31,7 @@ const Navbar = () => {
         logOut()
             .then(() => {
                 // user logged out
+                navigate("/", { replace: true });
             })
             .catch((error) => {
                 Swal.fire({
