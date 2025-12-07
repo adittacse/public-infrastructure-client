@@ -8,7 +8,7 @@ import { IoSunnySharp } from "react-icons/io5";
 
 const Navbar = () => {
     const [theme, setTheme] = useState("light");
-    const { user, logout } = useAuth();
+    const { user, logOut } = useAuth();
     const { role, isPremium } = useRole();
 
     useEffect(() => {
@@ -27,7 +27,7 @@ const Navbar = () => {
     }
 
     const handleLogout = () => {
-        logout()
+        logOut()
             .then(() => {
                 // user logged out
             })
@@ -36,8 +36,8 @@ const Navbar = () => {
                     icon: "error",
                     title: "Oops...",
                     text: `${error.message}`
-                })
-            })
+                });
+            });
     }
 
     const menuItems = <>
@@ -56,7 +56,7 @@ const Navbar = () => {
     </>;
 
     return (
-        <div className="navbar bg-base-100 border-b sticky top-0 z-20">
+        <div className="navbar bg-base-100 shadow-lg sticky top-0 z-20">
             <div className="navbar-start">
                 <div className="dropdown">
                     <div tabIndex={0} className="btn btn-ghost lg:hidden">
@@ -91,7 +91,9 @@ const Navbar = () => {
             </div>
 
             <div className="navbar-center hidden lg:flex">
-                <ul className="menu menu-horizontal px-1">{menuItems}</ul>
+                <ul className="menu menu-horizontal px-1">
+                    {menuItems}
+                </ul>
             </div>
 
             <div className="navbar-end">
@@ -107,14 +109,8 @@ const Navbar = () => {
                 </button>
 
                 {
-                    !user && <Link to="/login" className="btn btn-sm btn-primary">
-                        Login
-                    </Link>
-                }
-
-                {
-                    user && <div className="dropdown dropdown-end">
-                        <div tabIndex={0} className="btn btn-ghost btn-circle avatar">
+                    user ? <div className="dropdown dropdown-end">
+                        <div tabIndex={0} className="btn btn-ghost btn-circle avatar mr-2">
                             <div className="w-10 rounded-full border">
                                 <img src={user?.photoURL} alt="user"/>
                             </div>
@@ -122,26 +118,37 @@ const Navbar = () => {
                         <ul tabIndex={0} className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
                             <li className="mb-1 px-2">
                                 <p className="font-semibold">
-                                    {user.displayName || "Citizen"}
+                                    {user?.displayName || "Citizen"}
                                 </p>
                                 <p className="text-xs text-gray-500">
-                                    {user.email}
+                                    {user?.email}
                                 </p>
                                 <p className="text-xs mt-1">
-                                    Role: {role.toUpperCase()}
-                                    {isPremium && " • PREMIUM"}
+                                    {
+                                        role  && <span>Role: {role}</span>
+                                    }
+                                    {
+                                        isPremium && <span>{isPremium && " • PREMIUM"}</span>
+                                    }
                                 </p>
                             </li>
                             <li>
                                 <Link to="/dashboard">Dashboard</Link>
                             </li>
                             <li>
-                                <button onClick={handleLogout}>
+                                <button onClick={handleLogout} className="btn btn-primary">
                                     Logout
                                 </button>
                             </li>
                         </ul>
-                    </div>
+                    </div> : <>
+                        <Link to="/login" className="btn btn-sm btn-primary mr-2">
+                            Login
+                        </Link>
+                        <Link to="/register" className="btn btn-sm btn-primary">
+                            Register
+                        </Link>
+                    </>
                 }
             </div>
         </div>

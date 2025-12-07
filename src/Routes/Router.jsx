@@ -3,6 +3,8 @@ import { createBrowserRouter } from "react-router";
 import Loading from "../components/Loading/Loading.jsx";
 import RootLayout from "../layouts/RootLayout.jsx";
 import Home from "../pages/Home/Home.jsx";
+import Login from "../pages/Auth/Login/Login.jsx";
+import Register from "../pages/Auth/Register/Register.jsx";
 
 const Router = createBrowserRouter([
     {
@@ -14,6 +16,14 @@ const Router = createBrowserRouter([
                 index: true,
                 element: <Home />
             },
+            {
+                path: "login",
+                element: <Login />
+            },
+            {
+                path: "register",
+                element: <Register />
+            }
         ]
     },
 ]);
