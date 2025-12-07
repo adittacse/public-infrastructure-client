@@ -38,7 +38,7 @@ const DashboardLayout = () => {
 
                     </h2>
                     <p className="text-xs text-gray-500 mt-1">
-                        {role.toUpperCase()}
+                        {role && role.toUpperCase()}
                         {isPremium && " • PREMIUM"}
                         {isBlocked && " • BLOCKED"}
                     </p>

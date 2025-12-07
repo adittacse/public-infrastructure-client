@@ -7,6 +7,8 @@ import Login from "../pages/Auth/Login/Login.jsx";
 import Register from "../pages/Auth/Register/Register.jsx";
 import PrivateRoute from "./PrivateRoute.jsx";
 import DashboardLayout from "../layouts/DashboardLayout.jsx";
+import DashboardHome from "../pages/Dashboard/DashboardHome/DashboardHome.jsx";
+import MyIssues from "../pages/Dashboard/Citizen/MyIssues/MyIssues.jsx";
 
 const Router = createBrowserRouter([
     {
@@ -29,12 +31,16 @@ const Router = createBrowserRouter([
         ]
     },
     {
-        path: "/dashboard",
+        path: "dashboard",
         element: <PrivateRoute><DashboardLayout /></PrivateRoute>,
         children: [
             {
                 index: true,
-                // element:
+                element: <DashboardHome />
+            },
+            {
+                path: "my-issues",
+                element: <MyIssues />
             }
         ]
     }
