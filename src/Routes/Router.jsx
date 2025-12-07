@@ -5,6 +5,8 @@ import RootLayout from "../layouts/RootLayout.jsx";
 import Home from "../pages/Home/Home.jsx";
 import Login from "../pages/Auth/Login/Login.jsx";
 import Register from "../pages/Auth/Register/Register.jsx";
+import PrivateRoute from "./PrivateRoute.jsx";
+import DashboardLayout from "../layouts/DashboardLayout.jsx";
 
 const Router = createBrowserRouter([
     {
@@ -26,6 +28,16 @@ const Router = createBrowserRouter([
             }
         ]
     },
+    {
+        path: "/dashboard",
+        element: <PrivateRoute><DashboardLayout /></PrivateRoute>,
+        children: [
+            {
+                index: true,
+                // element:
+            }
+        ]
+    }
 ]);
 
 export default Router;
