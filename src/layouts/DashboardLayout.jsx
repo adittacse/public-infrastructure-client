@@ -79,7 +79,7 @@ const DashboardLayout = () => {
                             </NavLink>
 
                             <NavLink to="/dashboard/profile"
-                                className={({ isActive }) =>
+                                     className={({ isActive }) =>
                                     `btn btn-sm btn-block justify-start ${
                                         isActive ? "btn-primary" : "btn-ghost"
                                     }`
@@ -130,17 +130,16 @@ const DashboardLayout = () => {
                     {/* admin menu */}
                     {
                         role === "admin" && <>
-                            <NavLink
-                                to="/dashboard"
-                                end
+                            <NavLink to="/dashboard" end
                                 className={({ isActive }) =>
                                     `btn btn-sm btn-block justify-start ${
                                         isActive ? "btn-primary" : "btn-ghost"
                                     }`
                                 }
                             >
-                                Overview
+                                Overview Admin
                             </NavLink>
+
                             <NavLink
                                 to="/dashboard/all-issues"
                                 className={({ isActive }) =>
@@ -151,6 +150,7 @@ const DashboardLayout = () => {
                             >
                                 All Issues
                             </NavLink>
+
                             <NavLink
                                 to="/dashboard/manage-users"
                                 className={({ isActive }) =>
@@ -161,6 +161,7 @@ const DashboardLayout = () => {
                             >
                                 Manage Users
                             </NavLink>
+
                             <NavLink
                                 to="/dashboard/manage-staff"
                                 className={({ isActive }) =>
@@ -171,6 +172,7 @@ const DashboardLayout = () => {
                             >
                                 Manage Staff
                             </NavLink>
+
                             <NavLink
                                 to="/dashboard/payments"
                                 className={({ isActive }) =>
@@ -181,6 +183,7 @@ const DashboardLayout = () => {
                             >
                                 Payments
                             </NavLink>
+
                             <NavLink
                                 to="/dashboard/profile"
                                 className={({ isActive }) =>

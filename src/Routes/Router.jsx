@@ -6,11 +6,13 @@ import Login from "../pages/Auth/Login/Login.jsx";
 import Register from "../pages/Auth/Register/Register.jsx";
 import PrivateRoute from "./PrivateRoute.jsx";
 import DashboardLayout from "../layouts/DashboardLayout.jsx";
-import CitizenOverview from "../pages/Dashboard/Citizen/CitizenOverview/CitizenOverview.jsx";
 import MyIssues from "../pages/Dashboard/Citizen/MyIssues/MyIssues.jsx";
-import NotFound from "../pages/NotFound/NotFound.jsx";
+import DashboardHome from "../pages/Dashboard/DashboardHome/DashboardHome.jsx";
 import ReportIssue from "../pages/Dashboard/Citizen/ReportIssue/ReportIssue.jsx";
 import IssueDetails from "../pages/Issues/IssueDetails.jsx";
+import CitizenRoute from "./CitizenRoute.jsx";
+import AdminRoute from "./AdminRoute.jsx";
+import NotFound from "../pages/NotFound/NotFound.jsx";
 
 const Router = createBrowserRouter([
     {
@@ -41,18 +43,20 @@ const Router = createBrowserRouter([
         path: "dashboard",
         element: <PrivateRoute><DashboardLayout /></PrivateRoute>,
         children: [
+            // citizen dashboard
             {
                 index: true,
-                element: <CitizenOverview />
+                element: <DashboardHome />
             },
             {
                 path: "report-issue",
-                element: <ReportIssue />
+                element: <CitizenRoute><ReportIssue /></CitizenRoute>
             },
             {
                 path: "my-issues",
-                element: <MyIssues />
-            }
+                element: <CitizenRoute><MyIssues /></CitizenRoute>
+            },
+            // admin dashboard
         ]
     },
     {

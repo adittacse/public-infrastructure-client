@@ -1,10 +1,10 @@
-import {Link, NavLink, useNavigate} from "react-router";
+import { Link, NavLink, useNavigate } from "react-router";
 import useAuth from "../../hooks/useAuth.jsx";
 import useRole from "../../hooks/useRole.jsx";
-import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import { IoMdMoon } from "react-icons/io";
 import { IoSunnySharp } from "react-icons/io5";
+import Swal from "sweetalert2";
 
 const Navbar = () => {
     const [theme, setTheme] = useState("light");
