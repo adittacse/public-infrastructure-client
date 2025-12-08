@@ -15,6 +15,7 @@ import AdminRoute from "./AdminRoute.jsx";
 import NotFound from "../pages/NotFound/NotFound.jsx";
 import AdminAllIssues from "../pages/Dashboard/Admin/AdminAllIssues/AdminAllIssues.jsx";
 import ManageUsers from "../pages/Dashboard/Admin/ManageUsers/ManageUsers.jsx";
+import ManageStaff from "../pages/Dashboard/Admin/ManageStaff/ManageStaff.jsx";
 
 const Router = createBrowserRouter([
     {
@@ -66,6 +67,10 @@ const Router = createBrowserRouter([
             {
                 path: "manage-users",
                 element: <AdminRoute><ManageUsers /></AdminRoute>
+            },
+            {
+                path: "manage-staff",
+                element: <AdminRoute><ManageStaff /></AdminRoute>
             }
         ]
     },
