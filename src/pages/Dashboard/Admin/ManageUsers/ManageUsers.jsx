@@ -12,11 +12,11 @@ const ManageUsers = () => {
     const searchRef = useRef(null);
 
     const { data: users = [], isLoading, refetch } = useQuery({
-        queryKey: ["admin-citizens"],
+        queryKey: ["all-users"],
         enabled: role === "admin",
         queryFn: async () => {
             // const res = await axiosSecure.get(`/admin/citizens?search=${searchText}`);
-            const res = await axiosSecure.get("/admin/citizens");
+            const res = await axiosSecure.get("/admin/users");
             setUsersFiltered(res.data);
             return res.data;
         },
@@ -61,6 +61,49 @@ const ManageUsers = () => {
         });
     };
 
+    const handleChangeRole = (user, newRole) => {
+        if (user.role === newRole) {
+            return;
+        }
+
+        const titleMap = {
+            admin: "Make this user Admin?",
+            staff: "Make this user Staff?",
+            citizen: "Make this user Citizen?",
+        };
+
+        Swal.fire({
+            title: titleMap[newRole],
+            text: `Current role: ${user?.role} → New role: ${newRole}`,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "Yes, change it",
+        }).then(async (result) => {
+            if (!result.isConfirmed) return;
+
+            await axiosSecure.patch(`/admin/users/${user._id}/role`, { role: newRole })
+                .then(async (res) => {
+                    if (res.data.modifiedCount || res.data.success) {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Role updated",
+                            timer: 1500,
+                            showConfirmButton: false,
+                        });
+                        await refetch();
+                    }
+                })
+                .catch((error) => {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: `${error.message}`,
+                    });
+                });
+        });
+    };
+
     const handleSearch = () => {
         const text = searchRef.current.value.trim().toLowerCase();
         setTimeout(() => {
@@ -97,10 +140,10 @@ const ManageUsers = () => {
                     <tr>
                         <th>#</th>
                         <th>User</th>
-                        <th>Email</th>
                         <th>Subscription</th>
                         <th>Status</th>
                         <th>Role</th>
+                        <th>Role Actions</th>
                         <th>Action</th>
                     </tr>
                     </thead>
@@ -117,17 +160,17 @@ const ManageUsers = () => {
                             <td>{index + 1}</td>
                             <td>
                                 <div className="flex items-center gap-2">
-                                    {
-                                        user.photoURL && <div className="avatar">
-                                            <div className="w-8 rounded-full">
-                                                <img src={user?.photoURL} alt={user?.displayName} />
-                                            </div>
+                                    <div className="avatar">
+                                        <div className="w-8 rounded-full">
+                                            <img src={user?.photoURL} alt={user?.displayName} />
                                         </div>
-                                    }
-                                    <span>{user.displayName}</span>
+                                    </div>
+                                    <div>
+                                        <div className="font-bold">{user?.displayName}</div>
+                                        <div className="text-sm opacity-50">{user?.email}</div>
+                                    </div>
                                 </div>
                             </td>
-                            <td>{user.email}</td>
                             <td>
                                 {
                                     user.isPremium ? <>
@@ -154,8 +197,26 @@ const ManageUsers = () => {
                                     </>
                                 }
                             </td>
-                            <td className="capitalize">
-                                {user.role || "citizen"}
+                            <td className="capitalize">{user?.role}</td>
+                            <td>
+                                {
+                                    user?.role === "admin" && <>
+                                        <button onClick={() => handleChangeRole(user, "staff")} className="btn btn-xs btn-primary mr-2">Make Staff</button>
+                                        <button onClick={() => handleChangeRole(user, "citizen")} className="btn btn-xs btn-success">Make Citizen</button>
+                                    </>
+                                }
+                                {
+                                    user?.role === "staff" && <>
+                                        <button onClick={() => handleChangeRole(user, "admin")} className="btn btn-xs btn-warning mr-2">Make Admin</button>
+                                        <button onClick={() => handleChangeRole(user, "citizen")} className="btn btn-xs btn-success">Make Citizen</button>
+                                    </>
+                                }
+                                {
+                                    user?.role === "citizen" && <>
+                                        <button onClick={() => handleChangeRole(user, "admin")} className="btn btn-xs btn-warning mr-2">Make Admin</button>
+                                        <button onClick={() => handleChangeRole(user, "staff")} className="btn btn-xs btn-primary">Make Staff</button>
+                                    </>
+                                }
                             </td>
                             <td>
                                 <button onClick={() => handleBlockToggle(user)}
