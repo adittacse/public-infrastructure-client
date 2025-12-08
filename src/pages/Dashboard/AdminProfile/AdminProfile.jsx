@@ -1,16 +1,22 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../../hooks/useAxiosSecure.jsx";
 import useAuth from "../../../hooks/useAuth.jsx";
 import useRole from "../../../hooks/useRole.jsx";
 import Loading from "../../../components/Loading/Loading.jsx";
+import axios from "axios";
 import Swal from "sweetalert2";
 
 const AdminProfile = () => {
+    const [imageError, setImageError] = useState("");
     const axiosSecure = useAxiosSecure();
-    const { user } = useAuth();
+    const { user, updateUserProfile, setLoading } = useAuth();
     const { role } = useRole();
-    const { register, handleSubmit, reset } = useForm();
+    const { register,
+        handleSubmit,
+        formState: {errors}
+    } = useForm();
 
     const { data: profile, isLoading, refetch } = useQuery({
         queryKey: ["admin-profile", user?.email],
@@ -18,28 +24,35 @@ const AdminProfile = () => {
         queryFn: async () => {
             const res = await axiosSecure.get(`/admin/profile?email=${user.email}`);
             return res.data;
-        },
-        onSuccess: (data) => {
-            reset({
-                displayName: data.displayName || user?.displayName || "",
-                photoURL: data.photoURL || user?.photoURL || "",
-                phone: data.phone || "",
-            });
-        },
+        }
     });
 
-    const onSubmit = async (formData) => {
-        await axiosSecure.patch("/admin/profile", formData)
-            .then((res) => {
-                if (res.data.modifiedCount || res.data.success) {
-                    refetch();
-                    Swal.fire({
-                        icon: "success",
-                        title: "Profile updated",
-                        timer: 1200,
-                        showConfirmButton: false,
+    const handleUpdateProfile = async (data) => {
+        updateUserProfile(user, {
+            displayName: data.displayName,
+            photoURL: data?.photoURL
+        })
+            .then(async () => {
+                await axiosSecure.patch(`/admin/profile/${profile._id}`, data)
+                    .then(async (res) => {
+                        if (res.data.modifiedCount) {
+                            await refetch();
+                            setLoading(false);
+                            Swal.fire({
+                                icon: "success",
+                                title: "Profile updated",
+                                timer: 1500,
+                                showConfirmButton: false,
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: `${error.message}`
+                        });
                     });
-                }
             })
             .catch((error) => {
                 Swal.fire({
@@ -48,6 +61,47 @@ const AdminProfile = () => {
                     text: `${error.message}`
                 });
             });
+    }
+
+    const onSubmit = async (data) => {
+        setImageError("");
+        const imageFile = data?.photoURL[0];
+
+        if (imageFile) {
+            if (!imageFile.type.startsWith("image/")) {
+                setImageError("Only image files are allowed");
+                return;
+            }
+
+            // 1. store the image in form data
+            const formData = new FormData();
+            formData.append("image", imageFile);
+
+            // 2. send the image to store and get the URL
+            axios.post(`https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMAGE_HOST_KEY}`, formData)
+                .then(async (res) => {
+                    const photoURL = res.data.data.url;
+                    const updatedProfile = {
+                        displayName: data.displayName,
+                        photoURL: photoURL
+                    };
+
+                    await handleUpdateProfile(updatedProfile);
+                })
+                .catch((error) => {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: `${error.message}`
+                    });
+                });
+        } else {
+            const updatedProfile = {
+                displayName: data.displayName
+            };
+
+            await handleUpdateProfile(updatedProfile);
+        }
     };
 
     if (isLoading) {
@@ -84,38 +138,26 @@ const AdminProfile = () => {
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="card bg-base-100 shadow">
-                <div className="card-body space-y-3">
-                    <div>
-                        <label className="label">
-                            <span className="label-text">
-                                Display Name
-                            </span>
-                        </label>
-                        <input {...register("displayName")} className="input input-bordered w-full" />
-                    </div>
-                    <div>
-                        <label className="label">
-                            <span className="label-text">
-                                Photo URL
-                            </span>
-                        </label>
-                        <input {...register("photoURL")} className="input input-bordered w-full" />
-                    </div>
-                    <div>
-                        <label className="label">
-                            <span className="label-text">
-                                Phone (optional)
-                            </span>
-                        </label>
-                        <input {...register("phone")} className="input input-bordered w-full" />
-                    </div>
+                <fieldset className="fieldset card-body space-y-1 py-10">
+                    {/* display name */}
+                    <label className="label">
+                        <span className="label-text">Display Name</span>
+                    </label>
+                    <input {...register("displayName", { required: true })} defaultValue={profile?.displayName} className="input input-bordered w-full" />
+                    {errors.displayName?.type === "required" && <p className="text-red-500 font-medium">Name is Required</p>}
+
+                    {/* profile picture */}
+                    <label className="label">Profile Picture</label>
+                    <input {...register("photoURL")} type="file" className="file-input w-full" />
+                    {imageError && <p className="text-red-500 font-medium">{imageError}</p>}
+
+                    <label className="label">Email</label>
+                    <input {...register("email")} defaultValue={profile?.email} className="input input-bordered w-full" disabled />
 
                     <div className="card-actions justify-end">
-                        <button type="submit" className="btn btn-primary">
-                            Save Changes
-                        </button>
+                        <button type="submit" className="btn btn-primary">Update Profile</button>
                     </div>
-                </div>
+                </fieldset>
             </form>
         </div>
     );

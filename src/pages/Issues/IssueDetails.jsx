@@ -2,12 +2,12 @@ import { useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import useAxiosSecure from "../../hooks/useAxiosSecure.jsx";
 import useAuth from "../../hooks/useAuth.jsx";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import useRole from "../../hooks/useRole.jsx";
-import Swal from "sweetalert2";
 import Loading from "../../components/Loading/Loading.jsx";
 import Timeline from "../../components/Timeline/Timeline.jsx";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const IssueDetails = () => {
     const [editData, setEditData] = useState(null);
@@ -17,7 +17,6 @@ const IssueDetails = () => {
     const { user } = useAuth();
     const { role, isPremium, isBlocked } = useRole();
     const navigate = useNavigate();
-    const queryClient = useQueryClient();
     const issueModalRef = useRef(null);
 
     const { data, isLoading, refetch } = useQuery({
@@ -79,7 +78,6 @@ const IssueDetails = () => {
             image: issue.image,
             location: issue.location,
         });
-        // document.getElementById("edit_issue_modal").showModal();
         issueModalRef.current.showModal();
     };
 
@@ -93,7 +91,6 @@ const IssueDetails = () => {
                         timer: 1500,
                         showConfirmButton: false,
                     });
-                    // document.getElementById("edit_issue_modal").close();
                     issueModalRef.current.close();
                     setEditData(null);
                     refetch();
@@ -196,8 +193,7 @@ const IssueDetails = () => {
                 <div className="lg:col-span-2">
                     {
                         issue.image && <div className="mb-4">
-                            <img src={issue?.image} alt={issue?.title} className="w-full h-64 object-cover rounded-md"
-                            />
+                            <img src={issue?.image} alt={issue?.title} className="w-full h-64 object-cover rounded-md" />
                         </div>
                     }
 
@@ -211,23 +207,18 @@ const IssueDetails = () => {
                         </span>
                         <span
                             className={`badge ${
-                                issue?.status === "pending"
-                                    ? "badge-warning"
+                                issue?.status === "pending" ? "badge-warning"
                                     : issue?.status === "resolved" ||
-                                    issue?.status === "closed"
-                                        ? "badge-success"
-                                        : "badge-info"
+                                    issue?.status === "closed" ? "badge-success" : "badge-info"
                             }`}
                         >
                             {issue?.status}
                         </span>
-                        <span
-                            className={`badge ${
-                                issue?.priority === "high" ? "badge-error"
-                                    : "badge-ghost"
-                            }`}
+                        <span className={`badge ${issue?.priority === "high" ? "badge-error" : "badge-ghost"}`}
                         >
-                            {issue?.priority === "high" ? "High Priority" : "Normal Priority"}
+                            {
+                                issue?.priority === "high" ? "High Priority" : "Normal Priority"
+                            }
                         </span>
                         <span className="badge badge-ghost">
                             Upvotes: {issue?.upvoteCount || 0}
@@ -260,8 +251,7 @@ const IssueDetails = () => {
                             <span className="font-semibold">
                                 Assigned Staff:
                             </span>{" "}
-                            {issue?.assignedStaffName} (
-                            {issue?.assignedStaffEmail})
+                            {issue?.assignedStaffName} ({issue?.assignedStaffEmail})
                         </p>
                     }
 
@@ -276,8 +266,8 @@ const IssueDetails = () => {
 
                 {/* Actions */}
                 <div className="space-y-3">
-                    {isOwner && (
-                        <div className="card bg-base-100 shadow-md">
+                    {
+                        isOwner && <div className="card bg-base-100 shadow-md">
                             <div className="card-body">
                                 <h3 className="font-semibold">
                                     Your Actions
@@ -300,38 +290,35 @@ const IssueDetails = () => {
                                     </button>
                                 }
 
-                                {canBoost && (
-                                    <>
+                                {
+                                    canBoost && <>
                                         <div className="mt-3 text-sm text-gray-500">
-                                            Boost this issue for priority
-                                            handling. Cost: 100৳
+                                            Boost this issue for priority handling. Cost: 100৳
                                         </div>
-                                        <button
-                                            onClick={handleBoost}
-                                            className="btn btn-sm btn-warning mt-2"
-                                        >
+                                        <button onClick={handleBoost} className="btn btn-sm btn-warning mt-2">
                                             Boost Priority
                                         </button>
                                     </>
-                                )}
+                                }
 
-                                {issue.isBoosted && (
-                                    <p className="mt-2 text-sm text-green-600">
+                                {
+                                    issue.isBoosted && <p className="mt-2 text-sm text-green-600">
                                         This issue is already boosted.
                                     </p>
-                                )}
+                                }
 
-                                {isBlocked && (
-                                    <p className="mt-3 text-sm text-error">
+                                {
+                                    isBlocked && <p className="mt-3 text-sm text-error">
                                         You are blocked by admin. You cannot
                                         boost or submit issues.
                                     </p>
-                                )}
+                                }
                             </div>
                         </div>
-                    )}
+                    }
 
-                    {role === "staff" && issue.assignedStaffEmail === user?.email && (
+                    {
+                        role === "staff" && issue.assignedStaffEmail === user?.email && (
                         <div className="card bg-base-100 shadow-md">
                             <div className="card-body">
                                 <h3 className="font-semibold">
@@ -341,22 +328,21 @@ const IssueDetails = () => {
                                     Status changes available in staff dashboard.
                                 </p>
                             </div>
-                        </div>
-                    )}
+                        </div>)
+                    }
 
-                    {role === "admin" && (
-                        <div className="card bg-base-100 shadow-md">
+                    {
+                        role === "admin" && <div className="card bg-base-100 shadow-md">
                             <div className="card-body">
                                 <h3 className="font-semibold">
                                     Admin Panel
                                 </h3>
                                 <p className="text-xs text-gray-500">
-                                    Use Admin dashboard to assign staff or
-                                    reject this issue.
+                                    Use Admin dashboard to assign staff or reject this issue.
                                 </p>
                             </div>
                         </div>
-                    )}
+                    }
                 </div>
             </div>
 
@@ -364,8 +350,8 @@ const IssueDetails = () => {
             <dialog ref={issueModalRef} className="modal">
                 <div className="modal-box">
                     <h3 className="font-bold text-lg mb-3">Edit Issue</h3>
-                    {editData && (
-                        <form onSubmit={handleEditSubmit} className="space-y-3">
+                    {
+                        editData && <form onSubmit={handleEditSubmit} className="space-y-3">
                             {/* report title */}
                             <div>
                                 <label className="label">
@@ -405,7 +391,7 @@ const IssueDetails = () => {
                             {/* image */}
                             <div>
                                 <label className="label">
-                                    <span className="label-text">Image URL</span>
+                                    <span className="label-text">Image</span>
                                 </label>
                                 <input name="image" type="file" className="file-input w-full" />
                                 {
@@ -430,7 +416,7 @@ const IssueDetails = () => {
                                 </button>
                             </div>
                         </form>
-                    )}
+                    }
                 </div>
             </dialog>
         </div>
