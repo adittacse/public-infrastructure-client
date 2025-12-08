@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import useAxiosSecure from "../../../../hooks/useAxiosSecure.jsx";
 import useRole from "../../../../hooks/useRole.jsx";
 import { useQuery } from "@tanstack/react-query";
@@ -6,21 +6,18 @@ import Loading from "../../../../components/Loading/Loading.jsx";
 import Swal from "sweetalert2";
 
 const ManageUsers = () => {
-    const [searchText, setSearchText] = useState("");
+    const [usersFiltered, setUsersFiltered] = useState([]);
     const axiosSecure = useAxiosSecure();
     const { role } = useRole();
+    const searchRef = useRef(null);
 
-    const params = new URLSearchParams();
-    if (searchText) {
-        params.append("search", searchText);
-    }
-
-    const { data: users = [], isLoading, refetch, isFetching } = useQuery({
-        queryKey: ["admin-citizens", searchText],
+    const { data: users = [], isLoading, refetch } = useQuery({
+        queryKey: ["admin-citizens"],
         enabled: role === "admin",
         queryFn: async () => {
-            const url = params.toString() ? `/admin/citizens?${params.toString()}` : "/admin/citizens";
-            const res = await axiosSecure.get(url);
+            // const res = await axiosSecure.get(`/admin/citizens?search=${searchText}`);
+            const res = await axiosSecure.get("/admin/citizens");
+            setUsersFiltered(res.data);
             return res.data;
         },
     });
@@ -38,25 +35,43 @@ const ManageUsers = () => {
             confirmButtonColor: willBlock ? "#d33" : "#3085d6",
             confirmButtonText: willBlock ? "Yes, block" : "Yes, unblock",
         }).then(async (result) => {
-            if (!result.isConfirmed) return;
-
-            const res = await axiosSecure.patch(`/admin/users/${user._id}/block`, { isBlocked: willBlock });
-            if (res.data.modifiedCount || res.data.success) {
-                Swal.fire({
-                    icon: "success",
-                    title: willBlock ? "User blocked" : "User unblocked",
-                    timer: 1200,
-                    showConfirmButton: false,
-                });
-                refetch();
+            if (result.isConfirmed) {
+                await axiosSecure.patch(`/admin/citizens/${user._id}/block`, {
+                    isBlocked: willBlock
+                })
+                    .then(async (res) => {
+                        if (res.data.modifiedCount || res.data.success) {
+                            Swal.fire({
+                                icon: "success",
+                                title: willBlock ? "User blocked" : "User unblocked",
+                                timer: 1500,
+                                showConfirmButton: false,
+                            });
+                            await refetch();
+                        }
+                    })
+                    .catch((error) => {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: `${error.message}`
+                        });
+                    });
             }
         });
     };
 
-    const handleSearch = (e) => {
-        e.preventDefault();
-        refetch();
-    };
+    const handleSearch = () => {
+        const text = searchRef.current.value.trim().toLowerCase();
+        setTimeout(() => {
+            if (text === "") {
+                setUsersFiltered(users);
+            } else {
+                const result = users.filter(user => user.displayName.toLowerCase().includes(text));
+                setUsersFiltered(result);
+            }
+        }, 0);
+    }
 
     if (isLoading) {
         return <Loading />;
@@ -66,19 +81,15 @@ const ManageUsers = () => {
         <div>
             <h1 className="text-2xl font-bold mb-4">Manage Users</h1>
 
-            <form onSubmit={handleSearch} className="flex gap-2 mb-4 items-center">
-                <input type="text"
-                    placeholder="Search by name or email"
-                    className="input input-bordered w-full max-w-xs"
-                    value={searchText}
-                    onChange={(e) => setSearchText(e.target.value)}
-                />
-                <button type="submit" className="btn btn-primary btn-sm" disabled={isFetching}>
-                    {
-                        isFetching ? "Searching..." : "Search"
-                    }
-                </button>
-            </form>
+            <label className="input">
+                <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none" stroke="currentColor">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.3-4.3"></path>
+                    </g>
+                </svg>
+                <input ref={searchRef} onChange={handleSearch} type="search" placeholder="Search by name or email" />
+            </label>
 
             <div className="overflow-x-auto">
                 <table className="table table-zebra">
@@ -95,7 +106,14 @@ const ManageUsers = () => {
                     </thead>
                     <tbody>
                     {
-                        users.map((user, index) => <tr key={user._id}>
+                        usersFiltered.length === 0 && <tr>
+                            <td colSpan={7} className="text-center">
+                                No users found.
+                            </td>
+                        </tr>
+                    }
+                    {
+                        usersFiltered.map((user, index) => <tr key={user._id}>
                             <td>{index + 1}</td>
                             <td>
                                 <div className="flex items-center gap-2">
@@ -149,14 +167,6 @@ const ManageUsers = () => {
                                 </button>
                             </td>
                         </tr>)
-                    }
-
-                    {
-                        users.length === 0 && <tr>
-                            <td colSpan={7} className="text-center">
-                                No users found.
-                            </td>
-                        </tr>
                     }
                     </tbody>
                 </table>
