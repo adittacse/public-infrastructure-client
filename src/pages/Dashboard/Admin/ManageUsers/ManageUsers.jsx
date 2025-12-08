@@ -144,7 +144,12 @@ const ManageUsers = () => {
                 setUsersFiltered(users);
             } else {
                 const result = users.filter(user => user.displayName.toLowerCase().includes(text));
-                setUsersFiltered(result);
+                if (result.length === 0) {
+                    const result = users.filter(user => user.email.toLowerCase().includes(text));
+                    setUsersFiltered(result);
+                } else {
+                    setUsersFiltered(result);
+                }
             }
         }, 0);
     }
