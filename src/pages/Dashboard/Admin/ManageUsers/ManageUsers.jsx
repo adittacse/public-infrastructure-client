@@ -22,45 +22,6 @@ const ManageUsers = () => {
         },
     });
 
-    const handleBlockToggle = (user) => {
-        const willBlock = !user.isBlocked;
-
-        Swal.fire({
-            title: willBlock ? "Block this user?" : "Unblock this user?",
-            text: willBlock
-                ? "The user will not be able to submit or interact with issues."
-                : "The user will regain access to the system.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: willBlock ? "#d33" : "#3085d6",
-            confirmButtonText: willBlock ? "Yes, block" : "Yes, unblock",
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                await axiosSecure.patch(`/admin/citizens/${user._id}/block`, {
-                    isBlocked: willBlock
-                })
-                    .then(async (res) => {
-                        if (res.data.modifiedCount || res.data.success) {
-                            Swal.fire({
-                                icon: "success",
-                                title: willBlock ? "User blocked" : "User unblocked",
-                                timer: 1500,
-                                showConfirmButton: false,
-                            });
-                            await refetch();
-                        }
-                    })
-                    .catch((error) => {
-                        Swal.fire({
-                            icon: "error",
-                            title: "Oops...",
-                            text: `${error.message}`
-                        });
-                    });
-            }
-        });
-    };
-
     const handleChangeRole = (user, newRole) => {
         if (user.role === newRole) {
             return;
@@ -84,7 +45,7 @@ const ManageUsers = () => {
 
             await axiosSecure.patch(`/admin/users/${user._id}/role`, { role: newRole })
                 .then(async (res) => {
-                    if (res.data.modifiedCount || res.data.success) {
+                    if (res.data.modifiedCount) {
                         Swal.fire({
                             icon: "success",
                             title: "Role updated",
@@ -103,6 +64,78 @@ const ManageUsers = () => {
                 });
         });
     };
+
+    const handleBlockToggle = (user) => {
+        const willBlock = !user.isBlocked;
+
+        Swal.fire({
+            title: willBlock ? "Block this user?" : "Unblock this user?",
+            text: willBlock
+                ? "The user will not be able to submit or interact with issues."
+                : "The user will regain access to the system.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: willBlock ? "#d33" : "#3085d6",
+            confirmButtonText: willBlock ? "Yes, block" : "Yes, unblock",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await axiosSecure.patch(`/admin/citizens/${user._id}/block`, {
+                    isBlocked: willBlock
+                })
+                    .then(async (res) => {
+                        if (res.data.modifiedCount) {
+                            Swal.fire({
+                                icon: "success",
+                                title: willBlock ? "User blocked" : "User unblocked",
+                                timer: 1500,
+                                showConfirmButton: false,
+                            });
+                            await refetch();
+                        }
+                    })
+                    .catch((error) => {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: `${error.message}`
+                        });
+                    });
+            }
+        });
+    };
+
+    const handleDeleteUser = (id) => {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete user!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axiosSecure.delete(`/admin/users/${id}`)
+                    .then(async (res) => {
+                        if (res.data.deletedCount) {
+                            await refetch();
+                            Swal.fire({
+                                title: "Deleted!",
+                                text: "User has been deleted.",
+                                icon: "success"
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: `${error?.response?.data?.message}` || `${error.message}`
+                        });
+                    });
+            }
+        });
+    }
 
     const handleSearch = () => {
         const text = searchRef.current.value.trim().toLowerCase();
@@ -144,7 +177,7 @@ const ManageUsers = () => {
                         <th>Status</th>
                         <th>Role</th>
                         <th>Role Actions</th>
-                        <th>Action</th>
+                        <th>Other Actions</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -219,13 +252,12 @@ const ManageUsers = () => {
                                 }
                             </td>
                             <td>
-                                <button onClick={() => handleBlockToggle(user)}
-                                    className={`btn btn-xs ${user.isBlocked ? "btn-success" : "btn-error"}`}
-                                >
+                                <button onClick={() => handleBlockToggle(user)} className={`btn btn-xs mr-2 ${user.isBlocked ? "btn-success" : "btn-error"}`}>
                                     {
                                         user.isBlocked ? "Unblock" : "Block"
                                     }
                                 </button>
+                                <button onClick={() => handleDeleteUser(user._id)} className="btn btn-xs btn-error">Delete</button>
                             </td>
                         </tr>)
                     }
