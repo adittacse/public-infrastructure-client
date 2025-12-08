@@ -13,6 +13,7 @@ import IssueDetails from "../pages/Issues/IssueDetails.jsx";
 import CitizenRoute from "./CitizenRoute.jsx";
 import AdminRoute from "./AdminRoute.jsx";
 import NotFound from "../pages/NotFound/NotFound.jsx";
+import AdminAllIssues from "../pages/Dashboard/Admin/AdminAllIssues/AdminAllIssues.jsx";
 
 const Router = createBrowserRouter([
     {
@@ -57,6 +58,10 @@ const Router = createBrowserRouter([
                 element: <CitizenRoute><MyIssues /></CitizenRoute>
             },
             // admin dashboard
+            {
+                path: "all-issues",
+                element: <AdminRoute><AdminAllIssues /></AdminRoute>
+            }
         ]
     },
     {
