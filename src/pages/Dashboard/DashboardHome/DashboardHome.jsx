@@ -1,6 +1,7 @@
 import useRole from "../../../hooks/useRole.jsx";
 import Loading from "../../../components/Loading/Loading.jsx";
 import AdminOverview from "../Admin/AdminOverview/AdminOverview.jsx";
+import StaffOverview from "../Staff/StaffOverview/StaffOverview.jsx";
 import CitizenOverview from "../Citizen/CitizenOverview/CitizenOverview.jsx";
 
 const DashboardHome = () => {
@@ -13,7 +14,7 @@ const DashboardHome = () => {
     if (role === "admin") {
         return <AdminOverview />;
     } else if (role === "staff") {
-        return <AdminOverview />;
+        return <StaffOverview />;
     } else {
         return <CitizenOverview />;
     }

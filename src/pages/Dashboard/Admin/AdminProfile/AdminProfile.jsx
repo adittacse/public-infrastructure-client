@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
-import useAxiosSecure from "../../../hooks/useAxiosSecure.jsx";
-import useAuth from "../../../hooks/useAuth.jsx";
-import useRole from "../../../hooks/useRole.jsx";
-import Loading from "../../../components/Loading/Loading.jsx";
+import useAxiosSecure from "../../../../hooks/useAxiosSecure.jsx";
+import useAuth from "../../../../hooks/useAuth.jsx";
+import useRole from "../../../../hooks/useRole.jsx";
+import Loading from "../../../../components/Loading/Loading.jsx";
 import axios from "axios";
 import Swal from "sweetalert2";
 
