@@ -152,6 +152,17 @@ const DashboardLayout = () => {
                             </NavLink>
 
                             <NavLink
+                                to="/dashboard/manage-categories"
+                                className={({ isActive }) =>
+                                    `btn btn-sm btn-block justify-start ${
+                                        isActive ? "btn-primary" : "btn-ghost"
+                                    }`
+                                }
+                            >
+                                Manage Categories
+                            </NavLink>
+
+                            <NavLink
                                 to="/dashboard/manage-users"
                                 className={({ isActive }) =>
                                     `btn btn-sm btn-block justify-start ${

@@ -19,6 +19,7 @@ import ManageStaff from "../pages/Dashboard/Admin/ManageStaff/ManageStaff.jsx";
 import AdminProfile from "../pages/Dashboard/Admin/AdminProfile/AdminProfile.jsx";
 import StaffRoute from "./StaffRoute.jsx";
 import StaffOverview from "../pages/Dashboard/Staff/StaffOverview/StaffOverview.jsx";
+import ManageCategories from "../pages/Dashboard/Admin/ManageCategories/ManageCategories.jsx";
 
 const Router = createBrowserRouter([
     {
@@ -66,6 +67,10 @@ const Router = createBrowserRouter([
             {
                 path: "all-issues",
                 element: <AdminRoute><AdminAllIssues /></AdminRoute>
+            },
+            {
+                path: "manage-categories",
+                element: <AdminRoute><ManageCategories /></AdminRoute>
             },
             {
                 path: "manage-users",
