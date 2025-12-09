@@ -77,16 +77,6 @@ const DashboardLayout = () => {
                             >
                                 Report Issue
                             </NavLink>
-
-                            <NavLink to="/dashboard/profile"
-                                     className={({ isActive }) =>
-                                    `btn btn-sm btn-block justify-start ${
-                                        isActive ? "btn-primary" : "btn-ghost"
-                                    }`
-                                }
-                            >
-                                Profile
-                            </NavLink>
                         </>
                     }
 
@@ -104,6 +94,7 @@ const DashboardLayout = () => {
                             >
                                 Overview
                             </NavLink>
+
                             <NavLink
                                 to="/dashboard/assigned-issues"
                                 className={({ isActive }) =>
@@ -113,16 +104,6 @@ const DashboardLayout = () => {
                                 }
                             >
                                 Assigned Issues
-                            </NavLink>
-                            <NavLink
-                                to="/dashboard/profile"
-                                className={({ isActive }) =>
-                                    `btn btn-sm btn-block justify-start ${
-                                        isActive ? "btn-primary" : "btn-ghost"
-                                    }`
-                                }
-                            >
-                                Profile
                             </NavLink>
                         </>
                     }
@@ -194,19 +175,16 @@ const DashboardLayout = () => {
                             >
                                 Payments
                             </NavLink>
-
-                            <NavLink
-                                to="/dashboard/profile"
-                                className={({ isActive }) =>
-                                    `btn btn-sm btn-block justify-start ${
-                                        isActive ? "btn-primary" : "btn-ghost"
-                                    }`
-                                }
-                            >
-                                Profile
-                            </NavLink>
                         </>
                     }
+
+                    <NavLink to="/dashboard/profile"
+                         className={({ isActive }) =>
+                             `btn btn-sm btn-block justify-start ${isActive ? "btn-primary" : "btn-ghost"}`
+                         }
+                    >
+                        Profile
+                    </NavLink>
 
                     <button onClick={handleLogout} className="btn btn-sm btn-error btn-block mt-4">
                         Logout

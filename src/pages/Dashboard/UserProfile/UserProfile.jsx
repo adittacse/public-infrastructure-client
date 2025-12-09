@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
-import useAxiosSecure from "../../../../hooks/useAxiosSecure.jsx";
-import useAuth from "../../../../hooks/useAuth.jsx";
-import useRole from "../../../../hooks/useRole.jsx";
-import Loading from "../../../../components/Loading/Loading.jsx";
+import useAxiosSecure from "../../../hooks/useAxiosSecure.jsx";
+import useAuth from "../../../hooks/useAuth.jsx";
+import useRole from "../../../hooks/useRole.jsx";
+import Loading from "../../../components/Loading/Loading.jsx";
 import axios from "axios";
 import Swal from "sweetalert2";
 
-const AdminProfile = () => {
+const UserProfile = () => {
     const [imageError, setImageError] = useState("");
     const axiosSecure = useAxiosSecure();
     const { user, updateUserProfile, setLoading } = useAuth();
@@ -19,10 +19,10 @@ const AdminProfile = () => {
     } = useForm();
 
     const { data: profile, isLoading, refetch } = useQuery({
-        queryKey: ["admin-profile", user?.email],
-        enabled: role === "admin" && !!user?.email,
+        queryKey: ["user-profile", user?.email],
+        enabled: !!user?.email,
         queryFn: async () => {
-            const res = await axiosSecure.get(`/admin/profile?email=${user.email}`);
+            const res = await axiosSecure.get(`/user/profile?email=${user.email}`);
             return res.data;
         }
     });
@@ -33,7 +33,7 @@ const AdminProfile = () => {
             photoURL: data?.photoURL
         })
             .then(async () => {
-                await axiosSecure.patch(`/admin/profile/${profile._id}`, data)
+                await axiosSecure.patch(`/user/profile/${profile._id}`, data)
                     .then(async (res) => {
                         if (res.data.modifiedCount) {
                             await refetch();
@@ -110,7 +110,7 @@ const AdminProfile = () => {
 
     return (
         <div>
-            <h1 className="text-2xl font-bold mb-10">Admin Profile</h1>
+            <h1 className="text-2xl font-bold mb-10">Profile</h1>
 
             <div className="max-w-lg mx-auto">
 
@@ -127,11 +127,11 @@ const AdminProfile = () => {
                                     {profile?.displayName}
                                 </div>
                                 <div className="text-sm text-gray-500">
-                                    {user?.email}
+                                    {profile?.email}
                                 </div>
                                 <div className="mt-1">
-                                    <span className="badge badge-primary">
-                                        Admin
+                                    <span className="badge badge-primary capitalize">
+                                        {profile?.role}
                                     </span>
                                 </div>
                             </div>
@@ -156,7 +156,7 @@ const AdminProfile = () => {
                     <label className="label">Email</label>
                     <input {...register("email")} defaultValue={profile?.email} className="input input-bordered w-full" disabled />
 
-                    <div className="card-actions justify-end">
+                    <div className="card-actions justify-end mt-2">
                         <button type="submit" className="btn btn-primary">Update Profile</button>
                     </div>
                 </fieldset>
@@ -166,4 +166,4 @@ const AdminProfile = () => {
     );
 };
 
-export default AdminProfile;
+export default UserProfile;

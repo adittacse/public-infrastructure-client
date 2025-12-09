@@ -16,9 +16,7 @@ import NotFound from "../pages/NotFound/NotFound.jsx";
 import AdminAllIssues from "../pages/Dashboard/Admin/AdminAllIssues/AdminAllIssues.jsx";
 import ManageUsers from "../pages/Dashboard/Admin/ManageUsers/ManageUsers.jsx";
 import ManageStaff from "../pages/Dashboard/Admin/ManageStaff/ManageStaff.jsx";
-import AdminProfile from "../pages/Dashboard/Admin/AdminProfile/AdminProfile.jsx";
-import StaffRoute from "./StaffRoute.jsx";
-import StaffOverview from "../pages/Dashboard/Staff/StaffOverview/StaffOverview.jsx";
+import UserProfile from "../pages/Dashboard/UserProfile/UserProfile.jsx";
 import ManageCategories from "../pages/Dashboard/Admin/ManageCategories/ManageCategories.jsx";
 
 const Router = createBrowserRouter([
@@ -56,6 +54,10 @@ const Router = createBrowserRouter([
                 element: <DashboardHome />
             },
             {
+                path: "profile",
+                element: <UserProfile />
+            },
+            {
                 path: "report-issue",
                 element: <CitizenRoute><ReportIssue /></CitizenRoute>
             },
@@ -79,10 +81,6 @@ const Router = createBrowserRouter([
             {
                 path: "manage-staff",
                 element: <AdminRoute><ManageStaff /></AdminRoute>
-            },
-            {
-                path: "profile",
-                element: <AdminRoute><AdminProfile /></AdminRoute>
             },
             // staff dashboard
         ]
