@@ -139,7 +139,7 @@ const AdminAllIssues = () => {
 
     return (
         <div>
-            <h1 className="text-2xl font-bold mb-4">All Issues (Admin)</h1>
+            <h1 className="text-2xl font-bold mb-10">All Issues (Admin)</h1>
 
             {/* Filter form */}
             <form onSubmit={handleFilter} className="flex flex-wrap gap-2 mb-4 items-center">
@@ -186,7 +186,7 @@ const AdminAllIssues = () => {
                 </button>
             </form>
 
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto bg-base-100 shadow-2xl rounded-2xl">
                 <table className="table table-zebra">
                     <thead>
                     <tr>

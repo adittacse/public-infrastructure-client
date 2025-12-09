@@ -160,9 +160,9 @@ const ManageUsers = () => {
 
     return (
         <div>
-            <h1 className="text-2xl font-bold mb-4">Manage Users</h1>
+            <h1 className="text-2xl font-bold mb-10">Manage Users</h1>
 
-            <label className="input">
+            <label className="input mb-5">
                 <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none" stroke="currentColor">
                         <circle cx="11" cy="11" r="8"></circle>
@@ -172,11 +172,11 @@ const ManageUsers = () => {
                 <input ref={searchRef} onChange={handleSearch} type="search" placeholder="Search by name or email" />
             </label>
 
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto bg-base-100 shadow-2xl rounded-2xl">
                 <table className="table table-zebra">
                     <thead>
                     <tr>
-                        <th>#</th>
+                        <th>Sl.</th>
                         <th>User</th>
                         <th>Subscription</th>
                         <th>Status</th>

@@ -109,35 +109,37 @@ const AdminProfile = () => {
     }
 
     return (
-        <div className="max-w-lg mx-auto">
-            <h1 className="text-2xl font-bold text-center mb-4">Admin Profile</h1>
+        <div>
+            <h1 className="text-2xl font-bold mb-10">Admin Profile</h1>
 
-            <div className="card bg-base-100 shadow items-center mb-6">
-                <div className="card-body">
-                    <div className="flex items-center gap-4">
-                        <div className="avatar">
-                            <div className="w-16 rounded-full">
-                                <img src={profile?.photoURL} alt={profile?.displayName} />
+            <div className="max-w-lg mx-auto">
+
+                <div className="card bg-base-100 shadow-xl roundex-2xl items-center mb-10">
+                    <div className="card-body">
+                        <div className="flex items-center gap-4">
+                            <div className="avatar">
+                                <div className="w-16 rounded-full">
+                                    <img src={profile?.photoURL} alt={profile?.displayName} />
+                                </div>
                             </div>
-                        </div>
-                        <div>
-                            <div className="font-semibold">
-                                {profile?.displayName}
-                            </div>
-                            <div className="text-sm text-gray-500">
-                                {user?.email}
-                            </div>
-                            <div className="mt-1">
-                                <span className="badge badge-primary">
-                                    Admin
-                                </span>
+                            <div>
+                                <div className="font-semibold">
+                                    {profile?.displayName}
+                                </div>
+                                <div className="text-sm text-gray-500">
+                                    {user?.email}
+                                </div>
+                                <div className="mt-1">
+                                    <span className="badge badge-primary">
+                                        Admin
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="card bg-base-100 shadow">
+                <form onSubmit={handleSubmit(onSubmit)} className="card bg-base-100 shadow-xl rounded-2xl">
                 <fieldset className="fieldset card-body space-y-1 py-10">
                     {/* display name */}
                     <label className="label">
@@ -159,6 +161,7 @@ const AdminProfile = () => {
                     </div>
                 </fieldset>
             </form>
+            </div>
         </div>
     );
 };

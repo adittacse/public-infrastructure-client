@@ -167,7 +167,7 @@ const ManageCategories = () => {
                 </div>
 
                 {/* table */}
-                <div className="overflow-x-auto shadow-2xl bg-base-100">
+                <div className="overflow-x-auto bg-base-100 shadow-2xl rounded-2xl">
                     <h2 className="text-xl font-semibold text-center my-5">Category List</h2>
                     <table className="table table-zebra ">
                         <thead>
