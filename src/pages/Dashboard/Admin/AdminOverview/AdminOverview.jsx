@@ -53,7 +53,11 @@ const AdminOverview = () => {
             <StatsCards
                 totalIssues={totalIssues}
                 pending={pending}
+                inProgress={inProgress}
+                working={working}
                 resolved={resolved}
+                closed={closed}
+                rejected={rejected}
                 totalPayments={totalPayments} />
 
             {/* Status distribution (simple chart) */}

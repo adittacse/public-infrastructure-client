@@ -137,7 +137,7 @@ const DashboardLayout = () => {
                                     }`
                                 }
                             >
-                                Overview Admin
+                                Admin Overview
                             </NavLink>
 
                             <NavLink

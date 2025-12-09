@@ -1,4 +1,4 @@
-import {useRef, useState} from "react";
+import { useRef, useState } from "react";
 import useAxiosSecure from "../../../../hooks/useAxiosSecure.jsx";
 import useRole from "../../../../hooks/useRole.jsx";
 import { useQuery } from "@tanstack/react-query";
@@ -30,27 +30,27 @@ const ManageStaff = () => {
             confirmButtonColor: "#d33",
             confirmButtonText: "Yes, delete",
         }).then(async (result) => {
-            if (!result.isConfirmed) return;
-
-            await axiosSecure.delete(`/admin/staff/${staff._id}`)
-                .then((res) => {
-                    if (res.data.deletedCount || res.data.success) {
+            if (result.isConfirmed) {
+                await axiosSecure.delete(`/admin/staff/${staff._id}`)
+                    .then((res) => {
+                        if (res.data.deletedCount || res.data.success) {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Staff deleted",
+                                timer: 1200,
+                                showConfirmButton: false,
+                            });
+                            refetch();
+                        }
+                    })
+                    .catch((error) => {
                         Swal.fire({
-                            icon: "success",
-                            title: "Staff deleted",
-                            timer: 1200,
-                            showConfirmButton: false,
+                            icon: "error",
+                            title: "Oops...",
+                            text: `${error.message}`
                         });
-                        refetch();
-                    }
-                })
-                .catch((error) => {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: `${error.message}`
                     });
-                });
+            }
         });
     };
 

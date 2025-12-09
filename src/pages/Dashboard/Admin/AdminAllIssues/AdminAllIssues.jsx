@@ -18,41 +18,37 @@ const AdminAllIssues = () => {
     const { role } = useRole();
     const assignStaffRef = useRef(null);
 
-    const params = new URLSearchParams();
-    // if (status) {
-    //     params.append("status", status);
-    // }
-    // if (priority) {
-    //     params.append("priority", priority);
-    // }
-    // if (category) {
-    //     params.append("category", category);
-    // }
-    if (searchText) {
-        params.append("search", searchText);
-    }
-
-    // const queryString = params.toString();
-
-    const { data: issues = [], isLoading, refetch, isFetching } = useQuery({
-        queryKey: ["admin-issues", status, priority, category, searchText],
+    // all categories
+    const { data: categories = [] } = useQuery({
+        queryKey: ["admin-categories"],
         enabled: role === "admin",
         queryFn: async () => {
-            // const url = queryString ? `/admin/issues?${queryString}` : "/admin/issues";
-            const url = `/admin/issues?status=${status}&priority=${priority}&category=${category}&searchText=${searchText}`;
-            const res = await axiosSecure.get(url);
+            const res = await axiosSecure.get("/admin/categories");
             return res.data;
         },
     });
 
-    // staff list for Assign modal
+    // all issues including filter
+    const { data: issues = [], isFetching, refetch } = useQuery({
+        queryKey: ["admin-issues", status, priority, category, searchText],
+        enabled: role === "admin",
+        keepPreviousData: true,
+        refetchOnWindowFocus: false,
+        queryFn: async () => {
+            const url = `/admin/issues?status=${status}&priority=${priority}&category=${category}&search=${searchText}`;
+            const res = await axiosSecure.get(url);
+            return res.data;
+        }
+    });
+
+    // staff list to assign staff modal
     const { data: staffList = [], isLoading: staffLoading } = useQuery({
         queryKey: ["admin-staff-list"],
         enabled: role === "admin",
         queryFn: async () => {
             const res = await axiosSecure.get("/admin/staff");
             return res.data;
-        },
+        }
     });
 
     const handleOpenAssignModal = (issue) => {
@@ -71,24 +67,24 @@ const AdminAllIssues = () => {
             staffId: selectedStaffId
         })
             .then((res) => {
-                if (res.data.modifiedCount || res.data.success) {
-                    Swal.fire({
-                        icon: "success",
-                        title: "Staff assigned",
-                        timer: 1200,
-                        showConfirmButton: false,
-                    });
+                if (res.data.modifiedCount) {
                     assignStaffRef.current.close();
                     setSelectedIssue(null);
                     setSelectedStaffId("");
                     refetch();
+                    Swal.fire({
+                        icon: "success",
+                        title: "Staff assigned",
+                        timer: 1500,
+                        showConfirmButton: false,
+                    });
                 }
             })
             .catch((error) => {
                 Swal.fire({
                     icon: "error",
                     title: "Oops...",
-                    text: `${error.message}`
+                    text: `${error.message}`,
                 });
             });
     };
@@ -102,52 +98,47 @@ const AdminAllIssues = () => {
             confirmButtonColor: "#d33",
             confirmButtonText: "Yes, reject",
         }).then(async (result) => {
-            if (!result.isConfirmed) {
-                return;
-            }
-
-            await axiosSecure.patch(`/admin/issues/${issueId}/reject`)
-                .then((res) => {
-                    if (res.data.modifiedCount || res.data.success) {
+            if (result.isConfirmed) {
+                await axiosSecure.patch(`/admin/issues/${issueId}/reject`)
+                    .then((res) => {
+                        if (res.data.modifiedCount) {
+                            refetch();
+                            Swal.fire({
+                                icon: "success",
+                                title: "Issue rejected",
+                                timer: 1200,
+                                showConfirmButton: false,
+                            });
+                        }
+                    })
+                    .catch((error) => {
                         Swal.fire({
-                            icon: "success",
-                            title: "Issue rejected",
-                            timer: 1200,
-                            showConfirmButton: false,
+                            icon: "error",
+                            title: "Oops...",
+                            text: `${error.message}`
                         });
-                        refetch();
-                    }
-                })
-                .catch((error) => {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: `${error.message}`
                     });
-                });
+            }
         });
     };
 
-    const handleFilter = (e) => {
-        e.preventDefault();
-        refetch();
-    };
-
-    if (isLoading) {
+    if (status === "loading") {
         return <Loading />;
     }
 
     return (
         <div>
-            <h1 className="text-2xl font-bold mb-10">All Issues (Admin)</h1>
+            <h1 className="text-2xl font-bold mb-10">All Issues</h1>
 
-            {/* Filter form */}
-            <form onSubmit={handleFilter} className="flex flex-wrap gap-2 mb-4 items-center">
-                <select className="select select-bordered"
+            {/* filter data */}
+            {/*<div className="flex flex-wrap gap-2 mb-4 items-center">*/}
+            <div className="grid grid-cols-4 items-center gap-5 mb-5">
+                <select
+                    className="select select-bordered"
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
                 >
-                    <option value="">Status</option>
+                    <option value="">All Status</option>
                     <option value="pending">Pending</option>
                     <option value="in_progress">In Progress</option>
                     <option value="working">Working</option>
@@ -156,108 +147,116 @@ const AdminAllIssues = () => {
                     <option value="rejected">Rejected</option>
                 </select>
 
-                <select className="select select-bordered"
+                <select
+                    className="select select-bordered"
                     value={priority}
                     onChange={(e) => setPriority(e.target.value)}
                 >
-                    <option value="">Priority</option>
+                    <option value="">All Priorities</option>
                     <option value="high">High</option>
                     <option value="normal">Normal</option>
                 </select>
 
-                <input type="text"
-                    placeholder="Category"
-                    className="input input-bordered"
+                <select
+                    className="select select-bordered"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                />
+                >
+                    <option value="">All Categories</option>
+                    {
+                        categories.map((category) => <option key={category._id} value={category.categoryName}>
+                            {category?.categoryName}
+                        </option>)
+                    }
+                </select>
 
-                <input type="text"
+                <input
+                    type="text"
                     placeholder="Search by title / location"
                     className="input input-bordered"
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}
                 />
 
-                <button type="submit" className="btn btn-primary btn-sm" disabled={isFetching}>
-                    {
-                        isFetching ? "Filtering..." : "Filter"
-                    }
-                </button>
-            </form>
+                {
+                    isFetching && <span className="text-xs text-gray-500">Updating…</span>
+                }
+            </div>
 
             <div className="overflow-x-auto bg-base-100 shadow-2xl rounded-2xl">
                 <table className="table table-zebra">
                     <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Title</th>
-                        <th>Category</th>
-                        <th>Status</th>
-                        <th>Priority</th>
-                        <th>Assigned Staff</th>
-                        <th>Actions</th>
-                    </tr>
+                        <tr>
+                            <th>Sl.</th>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Priority</th>
+                            <th>Assigned Staff</th>
+                            <th>Actions</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    {
-                        issues.map((issue, index) => <tr key={issue._id}>
-                            <td>{index + 1}</td>
-                            <td>{issue.title}</td>
-                            <td>{issue.category}</td>
-                            <td className="capitalize">{issue.status}</td>
-                            <td>
-                                {
-                                    issue.priority === "high" ? <span className="badge badge-error">
-                                        High
-                                    </span>
-                                    : <span className="badge badge-ghost">
-                                        Normal
-                                    </span>
-                                }
-                            </td>
-                            <td className="text-sm">
-                                {
-                                    issue.assignedStaffEmail ? <>
-                                        <div>
-                                            {issue?.assignedStaffName}
-                                        </div>
-                                        <div className="text-xs text-gray-500">
-                                            {issue?.assignedStaffEmail}
-                                        </div>
-                                    </> : <>
-                                        <span className="text-xs text-gray-400">
-                                            Not assigned
-                                        </span>
-                                    </>
-                                }
-                            </td>
-                            <td className="space-x-2">
-                                {
-                                    !issue.assignedStaffEmail && <button onClick={() => handleOpenAssignModal(issue)}
-                                        className="btn btn-xs btn-primary"
-                                    >
-                                        Assign Staff
-                                    </button>
-                                }
-                                {
-                                    issue.status === "pending" && <button onClick={() => handleRejectIssue(issue._id)}
-                                        className="btn btn-xs btn-error"
-                                    >
-                                        Reject
-                                    </button>
-                                }
-                            </td>
-                        </tr>)
-                    }
+                        {
+                            issues.length === 0 && <tr>
+                                <td colSpan={7} className="text-center">
+                                    No issues found.
+                                </td>
+                            </tr>
+                        }
 
-                    {
-                        issues.length === 0 && <tr>
-                            <td colSpan={7} className="text-center">
-                                No issues found.
-                            </td>
-                        </tr>
-                    }
+                        {
+                            issues.map((issue, index) => <tr key={issue._id}>
+                                <td>{index + 1}</td>
+                                <td>{issue.title}</td>
+                                <td>{issue.category}</td>
+                                <td className="capitalize">{issue.status}</td>
+                                <td>
+                                    {
+                                        issue.priority === "high" ? <>
+                                            <span className="badge badge-error">High</span>
+                                        </>
+                                        : <>
+                                            <span className="badge badge-ghost">Normal</span>
+                                        </>
+                                    }
+                                </td>
+                                <td className="text-sm">
+                                    {
+                                        issue.assignedStaffEmail ? <>
+                                            <div>{issue?.assignedStaffName}</div>
+                                            <div className="text-xs text-gray-500">
+                                                {issue?.assignedStaffEmail}
+                                            </div>
+                                        </> : <>
+                                            <span className="text-xs text-gray-400">
+                                                Not assigned
+                                            </span>
+                                        </>
+                                    }
+                                </td>
+                                <td className="space-x-2">
+                                    {
+                                        !issue.assignedStaffEmail &&
+                                        <button
+                                            onClick={() => handleOpenAssignModal(issue)}
+                                            className="btn btn-xs btn-primary"
+                                        >
+                                            Assign Staff
+                                        </button>
+                                    }
+                                    {
+                                        issue.status === "pending" &&
+                                        <button
+                                            onClick={() => handleRejectIssue(issue._id)}
+                                            className="btn btn-xs btn-error"
+                                        >
+                                            Reject
+                                        </button>
+                                    }
+                                </td>
+                            </tr>)
+                        }
                     </tbody>
                 </table>
             </div>
@@ -267,24 +266,24 @@ const AdminAllIssues = () => {
                 <div className="modal-box">
                     <h3 className="font-bold text-lg mb-3">Assign Staff</h3>
                     {
-                        selectedIssue && <form onSubmit={handleAssignStaff} className="space-y-3">
+                        selectedIssue && (
+                        <form onSubmit={handleAssignStaff} className="space-y-3">
                             <p className="text-sm">
                                 Issue:{" "}
                                 <span className="font-semibold">
-                                    {selectedIssue.title}
+                                    {selectedIssue?.title}
                                 </span>
                             </p>
                             <div>
                                 <label className="label">
-                                    <span className="label-text">
-                                        Select Staff
-                                    </span>
+                                    <span className="label-text mb-1">Select Staff</span>
                                 </label>
-                                {
-                                    staffLoading ? <p className="text-sm text-gray-500">
+                                {staffLoading ? (
+                                    <p className="text-sm text-gray-500">
                                         Loading staff...
                                     </p>
-                                    : <select
+                                ) : (
+                                    <select
                                         className="select select-bordered w-full"
                                         value={selectedStaffId}
                                         onChange={(e) =>
@@ -294,12 +293,14 @@ const AdminAllIssues = () => {
                                     >
                                         <option value="">Choose a staff</option>
                                         {
-                                            staffList.map((staff) => <option key={staff._id} value={staff._id}>
-                                                {staff.displayName} ({staff.email})
-                                            </option>)
+                                            staffList.map((staff) => (
+                                                <option key={staff._id} value={staff._id}>
+                                                    {staff?.displayName} ({staff?.email})
+                                                </option>)
+                                            )
                                         }
                                     </select>
-                                }
+                                )}
                             </div>
 
                             <div className="modal-action">
@@ -310,7 +311,7 @@ const AdminAllIssues = () => {
                                     Assign
                                 </button>
                             </div>
-                        </form>
+                        </form>)
                     }
                 </div>
             </dialog>

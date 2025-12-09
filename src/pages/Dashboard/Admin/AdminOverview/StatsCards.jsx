@@ -1,6 +1,6 @@
 import React from "react";
 
-const StatsCards = ({ totalIssues, pending, resolved, totalPayments }) => {
+const StatsCards = ({ totalIssues, pending, inProgress, working, resolved, closed, rejected, totalPayments }) => {
     return (
         <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
             <div className="stat bg-base-100 shadow rounded-box">
@@ -16,15 +16,39 @@ const StatsCards = ({ totalIssues, pending, resolved, totalPayments }) => {
                 </div>
             </div>
             <div className="stat bg-base-100 shadow rounded-box">
+                <div className="stat-title">In Progress</div>
+                <div className="stat-value text-secondary">
+                    {inProgress}
+                </div>
+            </div>
+            <div className="stat bg-base-100 shadow rounded-box">
+                <div className="stat-title">Working</div>
+                <div className="stat-value text-info">
+                    {working}
+                </div>
+            </div>
+            <div className="stat bg-base-100 shadow rounded-box">
                 <div className="stat-title">Resolved</div>
                 <div className="stat-value text-success">
                     {resolved}
                 </div>
             </div>
             <div className="stat bg-base-100 shadow rounded-box">
+                <div className="stat-title">Closed</div>
+                <div className="stat-value text-info-content">
+                    {closed}
+                </div>
+            </div>
+            <div className="stat bg-base-100 shadow rounded-box">
+                <div className="stat-title">Rejected</div>
+                <div className="stat-value text-error">
+                    {rejected}
+                </div>
+            </div>
+            <div className="stat bg-base-100 shadow rounded-box">
                 <div className="stat-title">Total Payments</div>
-                <div className="stat-value text-info">
-                    {totalPayments}৳
+                <div className="stat-value text-success-content">
+                    {totalPayments}$
                 </div>
             </div>
         </div>

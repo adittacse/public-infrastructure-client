@@ -41,27 +41,27 @@ const ManageUsers = () => {
             confirmButtonColor: "#3085d6",
             confirmButtonText: "Yes, change it",
         }).then(async (result) => {
-            if (!result.isConfirmed) return;
-
-            await axiosSecure.patch(`/admin/users/${user._id}/role`, { role: newRole })
-                .then(async (res) => {
-                    if (res.data.modifiedCount) {
+            if (result.isConfirmed) {
+                await axiosSecure.patch(`/admin/users/${user._id}/role`, { role: newRole })
+                    .then(async (res) => {
+                        if (res.data.modifiedCount) {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Role updated",
+                                timer: 1500,
+                                showConfirmButton: false,
+                            });
+                            await refetch();
+                        }
+                    })
+                    .catch((error) => {
                         Swal.fire({
-                            icon: "success",
-                            title: "Role updated",
-                            timer: 1500,
-                            showConfirmButton: false,
+                            icon: "error",
+                            title: "Oops...",
+                            text: `${error.message}`,
                         });
-                        await refetch();
-                    }
-                })
-                .catch((error) => {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: `${error.message}`,
                     });
-                });
+            }
         });
     };
 
@@ -130,7 +130,7 @@ const ManageUsers = () => {
                         Swal.fire({
                             icon: "error",
                             title: "Oops...",
-                            text: `${error?.response?.data?.message}` || `${error.message}`
+                            text: `${error.message}`
                         });
                     });
             }
