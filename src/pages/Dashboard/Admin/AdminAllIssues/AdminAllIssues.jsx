@@ -19,26 +19,27 @@ const AdminAllIssues = () => {
     const assignStaffRef = useRef(null);
 
     const params = new URLSearchParams();
-    if (status) {
-        params.append("status", status);
-    }
-    if (priority) {
-        params.append("priority", priority);
-    }
-    if (category) {
-        params.append("category", category);
-    }
+    // if (status) {
+    //     params.append("status", status);
+    // }
+    // if (priority) {
+    //     params.append("priority", priority);
+    // }
+    // if (category) {
+    //     params.append("category", category);
+    // }
     if (searchText) {
         params.append("search", searchText);
     }
 
-    const queryString = params.toString();
+    // const queryString = params.toString();
 
     const { data: issues = [], isLoading, refetch, isFetching } = useQuery({
         queryKey: ["admin-issues", status, priority, category, searchText],
         enabled: role === "admin",
         queryFn: async () => {
-            const url = queryString ? `/admin/issues?${queryString}` : "/admin/issues";
+            // const url = queryString ? `/admin/issues?${queryString}` : "/admin/issues";
+            const url = `/admin/issues?status=${status}&priority=${priority}&category=${category}&searchText=${searchText}`;
             const res = await axiosSecure.get(url);
             return res.data;
         },
@@ -57,7 +58,6 @@ const AdminAllIssues = () => {
     const handleOpenAssignModal = (issue) => {
         setSelectedIssue(issue);
         setSelectedStaffId("");
-        // document.getElementById("assign_staff_modal").showModal();
         assignStaffRef.current.showModal();
     };
 
@@ -78,7 +78,6 @@ const AdminAllIssues = () => {
                         timer: 1200,
                         showConfirmButton: false,
                     });
-                    // document.getElementById("assign_staff_modal").close();
                     assignStaffRef.current.close();
                     setSelectedIssue(null);
                     setSelectedStaffId("");
@@ -208,15 +207,14 @@ const AdminAllIssues = () => {
                             <td>{issue.category}</td>
                             <td className="capitalize">{issue.status}</td>
                             <td>
-                                {issue.priority === "high" ? (
-                                    <span className="badge badge-error">
-                                            High
-                                        </span>
-                                ) : (
-                                    <span className="badge badge-ghost">
-                                            Normal
-                                        </span>
-                                )}
+                                {
+                                    issue.priority === "high" ? <span className="badge badge-error">
+                                        High
+                                    </span>
+                                    : <span className="badge badge-ghost">
+                                        Normal
+                                    </span>
+                                }
                             </td>
                             <td className="text-sm">
                                 {
@@ -297,7 +295,7 @@ const AdminAllIssues = () => {
                                         <option value="">Choose a staff</option>
                                         {
                                             staffList.map((staff) => <option key={staff._id} value={staff._id}>
-                                                {staff.name} ({staff.email})
+                                                {staff.displayName} ({staff.email})
                                             </option>)
                                         }
                                     </select>
@@ -305,10 +303,7 @@ const AdminAllIssues = () => {
                             </div>
 
                             <div className="modal-action">
-                                <button type="button" className="btn btn-ghost"
-                                    // onClick={() => document.getElementById("assign_staff_modal").close()}
-                                    onClick={() => assignStaffRef.current.close()}
-                                >
+                                <button type="button" className="btn btn-ghost" onClick={() => assignStaffRef.current.close()}>
                                     Cancel
                                 </button>
                                 <button type="submit" className="btn btn-primary" disabled={!selectedStaffId}>
