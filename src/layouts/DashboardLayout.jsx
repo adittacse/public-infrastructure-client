@@ -77,6 +77,14 @@ const DashboardLayout = () => {
                             >
                                 Report Issue
                             </NavLink>
+
+                            <NavLink to="/dashboard/citizen-profile"
+                                     className={({ isActive }) =>
+                                         `btn btn-sm btn-block justify-start ${isActive ? "btn-primary" : "btn-ghost"}`
+                                     }
+                            >
+                                Profile
+                            </NavLink>
                         </>
                     }
 

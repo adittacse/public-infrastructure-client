@@ -20,6 +20,7 @@ import ManageCategories from "../pages/Dashboard/Admin/ManageCategories/ManageCa
 import StaffRoute from "./StaffRoute.jsx";
 import StaffAssignedIssues from "../pages/Dashboard/Staff/StaffAssignedIssues/StaffAssignedIssues.jsx";
 import AdminProfile from "../pages/Dashboard/Admin/AdminProfile/AdminProfile.jsx";
+import CitizenProfile from "../pages/Dashboard/Citizen/CitizenProfile/CitizenProfile.jsx";
 
 const Router = createBrowserRouter([
     {
@@ -50,11 +51,11 @@ const Router = createBrowserRouter([
         path: "dashboard",
         element: <PrivateRoute><DashboardLayout /></PrivateRoute>,
         children: [
-            // citizen dashboard
             {
                 index: true,
                 element: <DashboardHome />
             },
+            // citizen dashboard
             {
                 path: "report-issue",
                 element: <CitizenRoute><ReportIssue /></CitizenRoute>
@@ -62,6 +63,10 @@ const Router = createBrowserRouter([
             {
                 path: "my-issues",
                 element: <CitizenRoute><MyIssues /></CitizenRoute>
+            },
+            {
+                path: "citizen-profile",
+                element: <CitizenRoute><CitizenProfile /></CitizenRoute>
             },
             // admin dashboard
             {
