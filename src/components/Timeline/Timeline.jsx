@@ -17,7 +17,7 @@ const Timeline = ({ logs }) => {
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-1">
                         <div>
                             <span
-                                className={`badge badge-sm mr-2 ${
+                                className={`badge badge-sm capitalize mr-2 ${
                                     log?.status === "pending" ? "badge-warning"
                                         : log?.status === "resolved" ||
                                         log?.status === "closed"
@@ -25,7 +25,7 @@ const Timeline = ({ logs }) => {
                                             : "badge-info"
                                 }`}
                             >
-                                {log?.status}
+                                {log?.status?.split("_").join(" ")}
                             </span>
                             <span className="font-medium">
                                 {log?.message}

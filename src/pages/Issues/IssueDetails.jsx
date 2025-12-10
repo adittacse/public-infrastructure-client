@@ -48,26 +48,16 @@ const IssueDetails = () => {
     const canBoost = isOwner && !issue.isBoosted && !isBlocked;
 
     const handleBoost = async () => {
-        if (!isOwner) return;
-
-        try {
-            const res = await axiosSecure.post("/create-checkout-session", {
-                paymentType: "boost_issue",
-                issueId: issue._id,
-                issueTitle: issue.title,
-                customerEmail: user.email,
-            });
-
-            if (res.data?.url) {
-                window.location.href = res.data.url;
-            }
-        } catch {
-            Swal.fire({
-                icon: "error",
-                title: "Payment init failed",
-                text: "Please try again.",
-            });
+        const data = {
+            paymentType: "boost_issue",
+            issueId: issue._id,
+            issueTitle: issue.title,
+            customerName: user.displayName,
+            customerEmail: user.email,
         }
+
+        const res = await axiosSecure.post("/create-checkout-session", data);
+        window.location.assign(res.data.url);
     };
 
     const handleUpdateIssue = () => {
@@ -191,11 +181,9 @@ const IssueDetails = () => {
         <div className="max-w-5xl mx-auto px-4 py-8">
             <div className="grid lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2">
-                    {
-                        issue.image && <div className="mb-4">
-                            <img src={issue?.image} alt={issue?.title} className="w-full h-64 object-cover rounded-md" />
-                        </div>
-                    }
+                     <div className="mb-4">
+                        <img src={issue?.image} alt={issue?.title} className="w-full h-64 object-cover rounded-md" />
+                    </div>
 
                     <h1 className="text-3xl font-bold mb-2">
                         {issue?.title}
@@ -206,13 +194,15 @@ const IssueDetails = () => {
                             {issue?.category}
                         </span>
                         <span
-                            className={`badge ${
+                            className={`badge capitalize ${
                                 issue?.status === "pending" ? "badge-warning"
                                     : issue?.status === "resolved" ||
                                     issue?.status === "closed" ? "badge-success" : "badge-info"
                             }`}
                         >
-                            {issue?.status}
+                            {
+                                issue?.status?.split("_").join(" ")
+                            }
                         </span>
                         <span className={`badge ${issue?.priority === "high" ? "badge-error" : "badge-ghost"}`}
                         >
@@ -241,7 +231,7 @@ const IssueDetails = () => {
                     <p className="mb-2 text-gray-600 text-sm">
                         Reported by{" "}
                         <span className="font-semibold">
-                            {issue?.reporterName || "Citizen"}
+                            {issue?.reporterName} -
                         </span>{" "}
                         ({issue?.reporterEmail})
                     </p>
@@ -251,7 +241,7 @@ const IssueDetails = () => {
                             <span className="font-semibold">
                                 Assigned Staff:
                             </span>{" "}
-                            {issue?.assignedStaffName} ({issue?.assignedStaffEmail})
+                            {issue?.assignedStaffName} - ({issue?.assignedStaffEmail})
                         </p>
                     }
 

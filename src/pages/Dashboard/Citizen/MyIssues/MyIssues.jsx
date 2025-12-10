@@ -120,7 +120,7 @@ const MyIssues = () => {
                 <table className="table table-zebra">
                     <thead>
                     <tr>
-                        <th>#</th>
+                        <th>Sl.</th>
                         <th>Title</th>
                         <th>Location</th>
                         <th>Status</th>
@@ -141,7 +141,7 @@ const MyIssues = () => {
                             <td>{idx + 1}</td>
                             <td>{issue?.title}</td>
                             <td>{issue?.location}</td>
-                            <td className="capitalize">{issue?.status}</td>
+                            <td className="capitalize">{issue?.status?.split("_").join(" ")}</td>
                             <td className="capitalize">{issue?.priority}</td>
                             <td className="space-x-2">
                                 <Link to={`/issues/${issue._id}`} className="btn btn-xs btn-primary">

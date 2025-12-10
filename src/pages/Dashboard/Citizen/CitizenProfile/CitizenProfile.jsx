@@ -121,7 +121,6 @@ const CitizenProfile = () => {
         };
 
         const res = await axiosSecure.post("/create-checkout-session", data);
-
         window.location.assign(res.data.url);
     };
 
