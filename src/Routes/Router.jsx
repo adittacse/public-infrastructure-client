@@ -18,6 +18,8 @@ import ManageUsers from "../pages/Dashboard/Admin/ManageUsers/ManageUsers.jsx";
 import ManageStaff from "../pages/Dashboard/Admin/ManageStaff/ManageStaff.jsx";
 import UserProfile from "../pages/Dashboard/UserProfile/UserProfile.jsx";
 import ManageCategories from "../pages/Dashboard/Admin/ManageCategories/ManageCategories.jsx";
+import StaffRoute from "./StaffRoute.jsx";
+import StaffAssignedIssues from "../pages/Dashboard/Staff/StaffAssignedIssues/StaffAssignedIssues.jsx";
 
 const Router = createBrowserRouter([
     {
@@ -83,6 +85,10 @@ const Router = createBrowserRouter([
                 element: <AdminRoute><ManageStaff /></AdminRoute>
             },
             // staff dashboard
+            {
+                path: "assigned-issues",
+                element: <StaffRoute><StaffAssignedIssues /></StaffRoute>
+            }
         ]
     },
     {

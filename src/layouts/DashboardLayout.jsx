@@ -92,7 +92,7 @@ const DashboardLayout = () => {
                                     }`
                                 }
                             >
-                                Overview
+                                Staff Overview
                             </NavLink>
 
                             <NavLink
