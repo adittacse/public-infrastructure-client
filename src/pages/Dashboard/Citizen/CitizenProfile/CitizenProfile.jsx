@@ -1,36 +1,114 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import useAxiosSecure from "../../../../hooks/useAxiosSecure.jsx";
 import useAuth from "../../../../hooks/useAuth.jsx";
 import useRole from "../../../../hooks/useRole.jsx";
+import { useForm } from "react-hook-form";
+import { useQuery } from "@tanstack/react-query";
+import Swal from "sweetalert2";
 import axios from "axios";
 import Loading from "../../../../components/Loading/Loading.jsx";
-import Swal from "sweetalert2";
 
 const CitizenProfile = () => {
     const [imageError, setImageError] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const axiosSecure = useAxiosSecure();
     const { user, updateUserProfile, setLoading } = useAuth();
-    const { role, isPremium, isBlocked } = useRole()
-    const queryClient = useQueryClient();
+    const { isPremium, isBlocked } = useRole();
 
     const {
         register,
         handleSubmit,
         reset,
-        formState: { errors },
+        formState: { errors }
     } = useForm();
 
-    // citizen profile data from backend
-    const { data: profile, isLoading } = useQuery({
-        queryKey: ["citizen-profile", user?.email],
-        enabled: role === "citizen" && !!user?.email,
+    const { data: profile, isLoading, refetch } = useQuery({
+        queryKey: ["user-profile", user?.email],
+        enabled: !!user?.email,
         queryFn: async () => {
             const res = await axiosSecure.get(`/citizen/profile?email=${user.email}`);
             return res.data;
-        },
+        }
     });
+
+    const handleUpdateProfile = async (data) => {
+        await updateUserProfile(user, {
+            displayName: data.displayName,
+            photoURL: data?.photoURL
+        })
+            .then(async () => {
+                await axiosSecure.patch(`/citizen/profile/${profile._id}`, data)
+                    .then(async (res) => {
+                        if (res.data.modifiedCount) {
+                            await refetch();
+                            reset();
+                            setLoading(false);
+                            Swal.fire({
+                                icon: "success",
+                                title: "Profile updated",
+                                timer: 1500,
+                                showConfirmButton: false,
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: `${error.message}`
+                        });
+                    });
+            })
+            .catch((error) => {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: `${error.message}`
+                });
+            });
+    }
+
+    const onSubmit = async (data) => {
+        setImageError("");
+        setIsSubmitting(true);
+
+        try {
+            const imageFile = data?.photoURL?.[0];
+
+            const updatedProfile = {
+                displayName: data.displayName,
+            };
+
+            if (imageFile) {
+                if (!imageFile.type.startsWith("image/")) {
+                    setImageError("Only image files are allowed");
+                    setIsSubmitting(false);
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append("image", imageFile);
+
+                const res = await axios.post(
+                    `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMAGE_HOST_KEY}`,
+                    formData
+                );
+
+                updatedProfile.photoURL = res.data.data.url;
+            }
+
+            await handleUpdateProfile(updatedProfile);
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: error.message,
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
 
     // 🔹 Stripe subscription (1000৳) – only if not premium & not blocked
     const handleSubscribe = async () => {
@@ -62,96 +140,7 @@ const CitizenProfile = () => {
         }
     };
 
-    const handleUpdateProfile = async (data) => {
-        // update in firebase auth
-        await updateUserProfile({
-            displayName: data.displayName,
-            photoURL: data.photoURL
-        });
-
-        // update in database -> users collection
-        const updatedData = {
-            displayName: data.displayName,
-            photoURL: data.photoURL,
-        };
-
-        await axiosSecure.patch(`/citizen/profile/${profile._id}`, updatedData)
-            .then((res) => {
-                if (res.data.modifiedCount) {
-                    // query cache আপডেট
-                    queryClient.setQueryData(
-                        ["citizen-profile", user.email],
-                        (old) => {
-                            if (!old) return old;
-                            return {
-                                ...old,
-                                displayName: data.displayName,
-                                photoURL: data.photoURL || old.photoURL,
-                            };
-                        }
-                    );
-                    Swal.fire({
-                        icon: "success",
-                        title: "Profile updated",
-                        timer: 1500,
-                        showConfirmButton: false,
-                    });
-                    setLoading(false);
-                }
-            })
-            .catch((error) => {
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: `${error.message}`
-                });
-            });
-    };
-
-    const onSubmit = async (formDataValues) => {
-        setImageError("");
-        setLoading(true);
-
-        const imageFile = formDataValues?.photo?.[0];
-
-        try {
-            let photoURL = profile?.photoURL || user?.photoURL || "";
-
-            // যদি নতুন ইমেজ সিলেক্ট করা হয়
-            if (imageFile) {
-                if (!imageFile.type.startsWith("image/")) {
-                    setImageError("Only image files are allowed");
-                    setLoading(false);
-                    return;
-                }
-
-                const imgForm = new FormData();
-                imgForm.append("image", imageFile);
-
-                const uploadRes = await axios.post(
-                    `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMAGE_HOST_KEY}`,
-                    imgForm
-                );
-                photoURL = uploadRes.data.data.url;
-            }
-
-            const updatedProfile = {
-                displayName: formDataValues.displayName,
-                photoURL,
-            };
-
-            await handleUpdateProfile(updatedProfile);
-        } catch (error) {
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: error.message,
-            });
-            setLoading(false);
-        }
-    };
-
-    if (isLoading || !user) {
+    if (isLoading) {
         return <Loading />;
     }
 
@@ -251,7 +240,7 @@ const CitizenProfile = () => {
 
                         {/* profile picture */}
                         <label className="label mt-2">Profile Picture</label>
-                        <input {...register("photo")} type="file" className="file-input w-full" />
+                        <input {...register("photoURL")} type="file" className="file-input w-full" />
                         {imageError && <p className="text-red-500 font-medium">{imageError}</p>}
 
                         {/* email – show only, not editable */}
@@ -259,8 +248,10 @@ const CitizenProfile = () => {
                         <input value={profile?.email} className="input input-bordered w-full" disabled />
 
                         <div className="card-actions justify-end mt-4">
-                            <button type="submit" className="btn btn-primary">
-                                Update Profile
+                            <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+                                {
+                                    isSubmitting ? "Updating..." : "Update Profile"
+                                }
                             </button>
                         </div>
                     </fieldset>
