@@ -12,7 +12,6 @@ const PaymentSuccess = () => {
     const [paymentInfo, setPaymentInfo] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    console.log(paymentInfo)
 
     useEffect(() => {
         if (!sessionId) {

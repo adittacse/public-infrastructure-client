@@ -22,6 +22,7 @@ import StaffAssignedIssues from "../pages/Dashboard/Staff/StaffAssignedIssues/St
 import AdminProfile from "../pages/Dashboard/Admin/AdminProfile/AdminProfile.jsx";
 import CitizenProfile from "../pages/Dashboard/Citizen/CitizenProfile/CitizenProfile.jsx";
 import PaymentSuccess from "../pages/Dashboard/Payment/PaymentSuccess.jsx";
+import PaymentCancelled from "../pages/Dashboard/Payment/PaymentCancelled.jsx";
 
 const Router = createBrowserRouter([
     {
@@ -71,7 +72,11 @@ const Router = createBrowserRouter([
             },
             {
                 path: "payment-success",
-                element: <PaymentSuccess />
+                element: <CitizenRoute><PaymentSuccess /></CitizenRoute>
+            },
+            {
+                path: "payment-cancelled",
+                element: <CitizenRoute><PaymentCancelled /></CitizenRoute>
             },
             // admin dashboard
             {
