@@ -112,32 +112,16 @@ const CitizenProfile = () => {
 
     // 🔹 Stripe subscription (1000৳) – only if not premium & not blocked
     const handleSubscribe = async () => {
-        if (!user?.email) return;
+        const data = {
+            paymentType: "subscription",
+            amount: 1000,
+            currency: "bdt",
+            customerEmail: user.email,
+        };
 
-        try {
-            const res = await axiosSecure.post("/create-checkout-session", {
-                paymentType: "subscription",
-                amount: 1000,
-                currency: "bdt",
-                customerEmail: user.email,
-            });
+        const res = await axiosSecure.post("/create-checkout-session", data);
 
-            if (res.data?.url) {
-                window.location.href = res.data.url;
-            } else {
-                Swal.fire({
-                    icon: "error",
-                    title: "Payment init failed",
-                    text: "Could not initialize payment. Please try again.",
-                });
-            }
-        } catch (error) {
-            Swal.fire({
-                icon: "error",
-                title: "Payment error",
-                text: error.response?.data?.message || error.message,
-            });
-        }
+        window.location.assign(res.data.url);
     };
 
     if (isLoading) {
