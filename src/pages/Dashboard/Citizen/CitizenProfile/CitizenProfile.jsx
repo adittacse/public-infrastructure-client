@@ -110,13 +110,14 @@ const CitizenProfile = () => {
     };
 
 
-    // 🔹 Stripe subscription (1000৳) – only if not premium & not blocked
+    // stripe subscription – only if not premium & not blocked
     const handleSubscribe = async () => {
         const data = {
             paymentType: "subscription",
             amount: 1000,
             currency: "bdt",
-            customerEmail: user.email,
+            customerName: user?.displayName,
+            customerEmail: user.email
         };
 
         const res = await axiosSecure.post("/create-checkout-session", data);

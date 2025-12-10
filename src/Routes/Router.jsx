@@ -21,6 +21,7 @@ import StaffRoute from "./StaffRoute.jsx";
 import StaffAssignedIssues from "../pages/Dashboard/Staff/StaffAssignedIssues/StaffAssignedIssues.jsx";
 import AdminProfile from "../pages/Dashboard/Admin/AdminProfile/AdminProfile.jsx";
 import CitizenProfile from "../pages/Dashboard/Citizen/CitizenProfile/CitizenProfile.jsx";
+import PaymentSuccess from "../pages/Dashboard/Payment/PaymentSuccess.jsx";
 
 const Router = createBrowserRouter([
     {
@@ -67,6 +68,10 @@ const Router = createBrowserRouter([
             {
                 path: "citizen-profile",
                 element: <CitizenRoute><CitizenProfile /></CitizenRoute>
+            },
+            {
+                path: "payment-success",
+                element: <PaymentSuccess />
             },
             // admin dashboard
             {
