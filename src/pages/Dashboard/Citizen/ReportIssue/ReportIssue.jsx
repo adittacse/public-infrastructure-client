@@ -81,8 +81,6 @@ const ReportIssue = () => {
                                         text: `${error.message}`
                                     });
                                 });
-
-
                         })
                         .catch((error) => {
                             Swal.fire({

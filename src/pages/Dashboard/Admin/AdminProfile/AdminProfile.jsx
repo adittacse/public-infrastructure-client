@@ -1,18 +1,16 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
-import useAxiosSecure from "../../../hooks/useAxiosSecure.jsx";
-import useAuth from "../../../hooks/useAuth.jsx";
-import useRole from "../../../hooks/useRole.jsx";
-import Loading from "../../../components/Loading/Loading.jsx";
+import useAxiosSecure from "../../../../hooks/useAxiosSecure.jsx";
+import useAuth from "../../../../hooks/useAuth.jsx";
+import Loading from "../../../../components/Loading/Loading.jsx";
 import axios from "axios";
 import Swal from "sweetalert2";
 
-const UserProfile = () => {
+const AdminProfile = () => {
     const [imageError, setImageError] = useState("");
     const axiosSecure = useAxiosSecure();
     const { user, updateUserProfile, setLoading } = useAuth();
-    const { role } = useRole();
     const { register,
         handleSubmit,
         formState: {errors}
@@ -22,7 +20,7 @@ const UserProfile = () => {
         queryKey: ["user-profile", user?.email],
         enabled: !!user?.email,
         queryFn: async () => {
-            const res = await axiosSecure.get(`/user/profile?email=${user.email}`);
+            const res = await axiosSecure.get(`/admin/profile?email=${user.email}`);
             return res.data;
         }
     });
@@ -33,7 +31,7 @@ const UserProfile = () => {
             photoURL: data?.photoURL
         })
             .then(async () => {
-                await axiosSecure.patch(`/user/profile/${profile._id}`, data)
+                await axiosSecure.patch(`/admin/profile/${profile._id}`, data)
                     .then(async (res) => {
                         if (res.data.modifiedCount) {
                             await refetch();
@@ -166,4 +164,4 @@ const UserProfile = () => {
     );
 };
 
-export default UserProfile;
+export default AdminProfile;
