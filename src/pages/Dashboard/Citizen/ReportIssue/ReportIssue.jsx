@@ -1,12 +1,15 @@
+import {useState} from "react";
 import { useNavigate } from "react-router";
 import useAuth from "../../../../hooks/useAuth.jsx";
 import axios from "axios";
 import useAxiosSecure from "../../../../hooks/useAxiosSecure.jsx";
+import {useQuery} from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import Swal from "sweetalert2";
 import Loading from "../../../../components/Loading/Loading.jsx";
+import Swal from "sweetalert2";
 
 const ReportIssue = () => {
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const { user } = useAuth();
     const axiosSecure = useAxiosSecure();
     const navigate = useNavigate();
@@ -18,61 +21,92 @@ const ReportIssue = () => {
         formState: { errors },
     } = useForm();
 
+    // load categories from database
+    const { data: categories = [], isLoading: categoryLoading } = useQuery({
+        queryKey: ["categories"],
+        queryFn: async () => {
+            const res = await axiosSecure.get("/categories");
+            return res.data;
+        },
+    });
+
+    // submit issue
     const handleSubmitIssue = async (data) => {
-        const imageFile = data.image[0];
-        if (!imageFile || !imageFile.type.startsWith("image/")) {
-            return;
-        }
+        setIsSubmitting(true);
 
-        // 1. store the image in form data
-        const formData = new FormData();
-        formData.append("image", imageFile);
+        axiosSecure.get(`/issues/${user?.email}/limit`)
+            .then((res) => {
+                if (res.data?.allowPosting) {
+                    const imageFile = data.image[0];
+                    if (!imageFile || !imageFile.type.startsWith("image/")) {
+                        return;
+                    }
 
-        // 2. send the image to store and get the URL
-        axios.post(`https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMAGE_HOST_KEY}`, formData)
-            .then(async (res) => {
-                const photoURL = res.data.data.url;
+                    // 1. store the image in form data
+                    const formData = new FormData();
+                    formData.append("image", imageFile);
 
-                const newIssue = {
-                    title: data.title,
-                    description: data.description,
-                    category: data.category,
-                    image: photoURL,
-                    location: data.location,
-                };
+                    axios.post(`https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMAGE_HOST_KEY}`, formData)
+                        .then(async (res) => {
+                            const photoURL = res.data.data.url;
 
-                await axiosSecure.post("/issues", newIssue)
-                    .then((res) => {
-                        if (res.data.insertedId) {
+                            const newIssue = {
+                                title: data.title,
+                                description: data.description,
+                                category: data.category,
+                                image: photoURL,
+                                location: data.location,
+                            };
+
+                            await axiosSecure.post("/issues", newIssue)
+                                .then((res) => {
+                                    if (res.data.insertedId) {
+                                        setIsSubmitting(false);
+                                        Swal.fire({
+                                            icon: "success",
+                                            title: "Issue reported",
+                                            text: "Your issue has been submitted.",
+                                            timer: 1500,
+                                            showConfirmButton: false,
+                                        });
+                                        reset();
+                                        navigate("/dashboard/my-issues");
+                                    }
+                                })
+                                .catch((error) => {
+                                    setIsSubmitting(false);
+                                    Swal.fire({
+                                        icon: "error",
+                                        title: "Oops...",
+                                        text: `${error.message}`
+                                    });
+                                });
+
+
+                        })
+                        .catch((error) => {
                             Swal.fire({
-                                icon: "success",
-                                title: "Issue reported",
-                                text: "Your issue has been submitted.",
-                                timer: 1500,
-                                showConfirmButton: false,
+                                icon: "error",
+                                title: "Oops...",
+                                text: `${error?.message}`
                             });
-                            reset();
-                            navigate("/dashboard/my-issues");
-                        }
-                    })
-                    .catch((error) => {
-                        Swal.fire({
-                            icon: "error",
-                            title: "Oops...",
-                            text: `${error.message}`
                         });
-                    });
+                }
             })
             .catch((error) => {
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: `${error.message}`
-                });
+                setIsSubmitting(false);
+                if (error?.response?.data?.message) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: `${error?.response?.data?.message}`
+                    });
+                    navigate("/dashboard/profile", { replace: true });
+                }
             });
     };
 
-    if (!user) {
+    if (!user || categoryLoading) {
         return <Loading />;
     }
 
@@ -123,15 +157,16 @@ const ReportIssue = () => {
                     </label>
                     <select
                         {...register("category", { required: true })}
+                        defaultValue="Select Category"
                         className="select select-bordered w-full"
                     >
-                        <option value="">Select Category</option>
-                        <option value="Streetlight">Streetlight</option>
-                        <option value="Road / Pothole">Road / Pothole</option>
-                        <option value="Water Leakage">Water Leakage</option>
-                        <option value="Garbage">Garbage</option>
-                        <option value="Footpath">Footpath</option>
-                        <option value="Other">Other</option>
+                        <option disabled={true}>Select Category</option>
+                        {
+                            categories.map((category) => (
+                            <option key={category._id} value={category?.categoryName}>
+                                {category?.categoryName}
+                            </option>))
+                        }
                     </select>
                     {
                         errors.category && <p className="text-red-500 text-sm">
@@ -173,8 +208,10 @@ const ReportIssue = () => {
                 </div>
 
                 <div className="md:col-span-2 flex justify-end">
-                    <button type="submit" className="btn btn-primary">
-                        Submit Issue
+                    <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+                        {
+                            isSubmitting ? "Submitting..." : "Submit Issue"
+                        }
                     </button>
                 </div>
             </form>

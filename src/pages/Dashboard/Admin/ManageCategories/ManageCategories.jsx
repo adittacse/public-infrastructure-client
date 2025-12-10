@@ -34,7 +34,7 @@ const ManageCategories = () => {
         queryKey: ["categories"],
         enabled: role === "admin",
         queryFn: async () => {
-            const res = await axiosSecure.get("/admin/categories");
+            const res = await axiosSecure.get("/categories");
             return res.data;
         },
     });
@@ -42,7 +42,7 @@ const ManageCategories = () => {
     // Create category
     const onSubmit = async (data) => {
         setIsSubmitting(true);
-        axiosSecure.post("/admin/categories", data)
+        axiosSecure.post("/categories", data)
             .then((res) => {
                 if (res.data.insertedId) {
                     reset();
@@ -80,7 +80,7 @@ const ManageCategories = () => {
             categoryName: data.name
         };
 
-        axiosSecure.patch(`/admin/categories/${selectedCategory._id}`, name)
+        axiosSecure.patch(`/categories/${selectedCategory._id}`, name)
             .then((res) => {
                 if (res.data.modifiedCount) {
                     refetch();
@@ -115,7 +115,7 @@ const ManageCategories = () => {
             confirmButtonText: "Yes, delete it!"
         }).then((result) => {
             if (result.isConfirmed) {
-                axiosSecure.delete(`/admin/categories/${category._id}`)
+                axiosSecure.delete(`/categories/${category._id}`)
                     .then((res) => {
                         if (res.data.deletedCount) {
                             refetch();
