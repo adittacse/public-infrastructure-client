@@ -12,6 +12,7 @@ const MyIssues = () => {
     const { user } = useAuth();
     const axiosSecure = useAxiosSecure();
 
+    // get locations to show in filter dropdown
     const { data: locations = [], isLoading: isLocationsLoading } = useQuery({
         queryKey: ["my-issue-locations", user?.email],
         enabled: !!user?.email,
@@ -22,17 +23,10 @@ const MyIssues = () => {
     });
 
     const { data: issues = [], isLoading: isIssuesLoading, refetch, isFetching } = useQuery({
-        queryKey: ["my-issues", user?.email],
+        queryKey: ["my-issues", user?.email, status, location],
         enabled: !!user?.email,
         queryFn: async () => {
-            const params = new URLSearchParams();
-            if (status) params.append("status", status);
-            if (location) params.append("location", location);
-
-            const queryString = params.toString();
-            const url = queryString ? `/citizen/my-issues?${queryString}` : "/citizen/my-issues";
-
-            const res = await axiosSecure.get(url);
+            const res = await axiosSecure.get(`/citizen/my-issues?email=${user?.email}&status=${status}&location=${location}`);
             return res.data;
         },
     });
@@ -71,11 +65,6 @@ const MyIssues = () => {
         });
     };
 
-    const handleFilter = (e) => {
-        e.preventDefault();
-        refetch();
-    };
-
     if (isIssuesLoading || isLocationsLoading) {
         return <Loading />;
     }
@@ -84,14 +73,15 @@ const MyIssues = () => {
         <div>
             <h1 className="text-2xl font-bold mb-10">My Issues</h1>
 
-            <form onSubmit={handleFilter} className="flex flex-wrap gap-2 mb-5 items-center">
+            {/* filter data */}
+            <div className="flex flex-wrap gap-2 mb-5 items-center">
                 {/* Status filter */}
                 <select
                     className="select select-bordered"
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
                 >
-                    <option disabled value="">Status</option>
+                    <option value="">Status (All)</option>
                     <option value="pending">Pending</option>
                     <option value="in_progress">In Progress</option>
                     <option value="working">Working</option>
@@ -100,21 +90,25 @@ const MyIssues = () => {
                     <option value="rejected">Rejected</option>
                 </select>
 
-                <select className="select select-bordered" value={location} onChange={(e) => setLocation(e.target.value)}>
-                    <option disabled value="">Location</option>
+                <select
+                    className="select select-bordered"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                >
+                    <option value="">Location (All)</option>
                     {
-                        locations.map((location) => <option key={location} value={location}>
-                            {location}
-                        </option>)
+                        locations.map((location) =>
+                            <option key={location} value={location}>
+                                {location}
+                            </option>
+                        )
                     }
                 </select>
 
-                <button type="submit" className="btn btn-primary btn-sm" disabled={isFetching}>
-                    {
-                        isFetching ? "Filtering..." : "Filter"
-                    }
-                </button>
-            </form>
+                {
+                    isFetching && <span className="text-xs text-gray-500">Updating…</span>
+                }
+            </div>
 
             <div className="overflow-x-auto bg-base-100 shadow-2xl rounded-2xl">
                 <table className="table table-zebra">
