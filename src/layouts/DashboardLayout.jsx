@@ -113,6 +113,17 @@ const DashboardLayout = () => {
                             >
                                 Assigned Issues
                             </NavLink>
+
+                            <NavLink
+                                to="/dashboard/staff-profile"
+                                className={({ isActive }) =>
+                                    `btn btn-sm btn-block justify-start ${
+                                        isActive ? "btn-primary" : "btn-ghost"
+                                    }`
+                                }
+                            >
+                                Profile
+                            </NavLink>
                         </>
                     }
 

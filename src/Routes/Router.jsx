@@ -25,6 +25,7 @@ import PaymentSuccess from "../pages/Dashboard/Payment/PaymentSuccess.jsx";
 import PaymentCancelled from "../pages/Dashboard/Payment/PaymentCancelled.jsx";
 import Payments from "../pages/Dashboard/Admin/Payments/Payments.jsx";
 import PaymentInvoice from "../pages/Dashboard/Admin/Payments/PaymentInvoice.jsx";
+import StaffProfile from "../pages/Dashboard/Staff/StaffProfile/StaffProfile.jsx";
 
 const Router = createBrowserRouter([
     {
@@ -116,6 +117,10 @@ const Router = createBrowserRouter([
                 path: "assigned-issues",
                 element: <StaffRoute><StaffAssignedIssues /></StaffRoute>
             },
+            {
+                path: "staff-profile",
+                element: <StaffRoute><StaffProfile /></StaffRoute>
+            }
         ]
     },
     {
