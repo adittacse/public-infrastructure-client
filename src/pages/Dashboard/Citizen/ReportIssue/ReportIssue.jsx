@@ -15,7 +15,6 @@ const ReportIssue = () => {
     const { isBlocked } = useRole();
     const axiosSecure = useAxiosSecure();
     const navigate = useNavigate();
-    console.log(isBlocked);
 
     const {
         register,

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../../../hooks/useAxiosSecure.jsx";
@@ -6,14 +6,18 @@ import useAuth from "../../../../hooks/useAuth.jsx";
 import useRole from "../../../../hooks/useRole.jsx";
 import Loading from "../../../../components/Loading/Loading.jsx";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 const MyIssues = () => {
     const [status, setStatus] = useState("");
     const [category, setCategory] = useState("");
     const [location, setLocation] = useState("");
+    const [editData, setEditData] = useState(null);
+    const [imageError, setImageError] = useState("");
     const { user } = useAuth();
     const { isBlocked } = useRole();
     const axiosSecure = useAxiosSecure();
+    const issueModalRef = useRef(null);
 
     // get categories to show in filter dropdown
     const { data: categories = [] } = useQuery({
@@ -42,6 +46,102 @@ const MyIssues = () => {
             return res.data;
         },
     });
+
+    const handleUpdateIssue = (issue) => {
+        if (isBlocked) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "You are currently blocked",
+                footer: "Please contact the relevant authority for further assistance."
+            });
+            return;
+        }
+
+        setEditData({
+            id: issue._id,
+            title: issue.title,
+            description: issue.description,
+            category: issue.category,
+            image: issue.image,
+            location: issue.location,
+        });
+        issueModalRef.current.showModal();
+    };
+
+    const handlePatchData = async (id, data) => {
+        await axiosSecure.patch(`/citizen/issues/${id}`, data)
+            .then((res) => {
+                if (res.data.modifiedCount) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Issue updated",
+                        timer: 1500,
+                        showConfirmButton: false,
+                    });
+                    issueModalRef.current.close();
+                    setEditData(null);
+                    refetch();
+                }
+            })
+            .catch((error) => {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: `${error.message}`
+                });
+            });
+    }
+
+    const handleEditSubmit = async (e) => {
+        e.preventDefault();
+        setImageError("");
+        const issueId = e.target.issueId.value;
+
+        const imageFile = e.target?.image?.files[0];
+        if (imageFile) {
+            if (!imageFile.type.startsWith("image/")) {
+                setImageError("Only image files are allowed");
+                return;
+            }
+
+            // 1. store the image in form data
+            const formData = new FormData();
+            formData.append("image", imageFile);
+
+            // 2. send the image to store and get the URL
+            axios.post(`https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMAGE_HOST_KEY}`, formData)
+                .then(async (res) => {
+                    const photoURL = res.data.data.url;
+
+                    const updatedIssue = {
+                        title: e.target.title.value,
+                        description: e.target.description.value,
+                        category: e.target.category.value,
+                        image: photoURL,
+                        location: e.target.location.value,
+                    };
+
+                    await handlePatchData(issueId, updatedIssue);
+                })
+                .catch((error) => {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: `${error?.message}`
+                    });
+                });
+        } else {
+            const updatedIssue = {
+                title: e.target.title.value,
+                description: e.target.description.value,
+                category: e.target.category.value,
+                location: e.target.location.value,
+            };
+
+            await handlePatchData(issueId, updatedIssue);
+        }
+    };
 
     const handleDelete = async (id) => {
         if (isBlocked) {
@@ -146,6 +246,7 @@ const MyIssues = () => {
                     <thead>
                     <tr>
                         <th>Sl.</th>
+                        <th>Image</th>
                         <th>Title</th>
                         <th>Location</th>
                         <th>Status</th>
@@ -164,15 +265,29 @@ const MyIssues = () => {
                     {
                         issues.map((issue, idx) => <tr key={issue._id}>
                             <td>{idx + 1}</td>
+                            <td>
+                                <div className="avatar">
+                                    <div className="mask mask-squircle h-12 w-12">
+                                        <img src={issue?.image} alt={issue?.title} />
+                                    </div>
+                                </div>
+                            </td>
                             <td>{issue?.title}</td>
                             <td>{issue?.location}</td>
                             <td className="capitalize">{issue?.status?.split("_").join(" ")}</td>
                             <td className="capitalize">{issue?.priority}</td>
                             <td className="space-x-2">
-                                <Link to={`/issues/${issue._id}`} className="btn btn-xs btn-primary">
+                                <Link to={`/issues/${issue._id}`} className="btn btn-sm btn-primary">
                                     View
                                 </Link>
-                                <button onClick={() => handleDelete(issue._id)} className="btn btn-xs btn-error">
+                                {
+                                    issue?.status === "pending" && (
+                                        <button onClick={() => handleUpdateIssue(issue)} className="btn btn-sm btn-outline btn-primary">
+                                            Edit
+                                        </button>
+                                    )
+                                }
+                                <button onClick={() => handleDelete(issue._id)} className="btn btn-sm btn-error">
                                     Delete
                                 </button>
                             </td>
@@ -181,6 +296,83 @@ const MyIssues = () => {
                     </tbody>
                 </table>
             </div>
+
+            {/* Edit Modal */}
+            <dialog ref={issueModalRef} className="modal">
+                <div className="modal-box">
+                    <h3 className="font-bold text-lg mb-3">Edit Issue</h3>
+                    {
+                        editData && <form onSubmit={handleEditSubmit} className="space-y-3">
+                            {/* issue id */}
+                            <input type="hidden" name="issueId" value={editData.id} />
+
+                            {/* report title */}
+                            <div>
+                                <label className="label">
+                                    <span className="label-text">Title</span>
+                                </label>
+                                <input name="title" defaultValue={editData.title} className="input input-bordered w-full" required />
+                            </div>
+
+                            {/* description */}
+                            <div>
+                                <label className="label">
+                                    <span className="label-text">Description</span>
+                                </label>
+                                <textarea name="description" defaultValue={editData.description} className="textarea textarea-bordered w-full" rows={3} required></textarea>
+                            </div>
+
+                            {/* category */}
+                            <div>
+                                <label className="label">
+                                    <span className="label-text">Category</span>
+                                </label>
+                                <select
+                                    name="category"
+                                    defaultValue={editData.category}
+                                    className="select select-bordered w-full"
+                                >
+                                    <option value="">Select Category</option>
+                                    <option value="Streetlight">Streetlight</option>
+                                    <option value="Road / Pothole">Road / Pothole</option>
+                                    <option value="Water Leakage">Water Leakage</option>
+                                    <option value="Garbage">Garbage</option>
+                                    <option value="Footpath">Footpath</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+
+                            {/* image */}
+                            <div>
+                                <label className="label">
+                                    <span className="label-text">Image</span>
+                                </label>
+                                <input name="image" type="file" className="file-input w-full" />
+                                {
+                                    imageError && <p className="text-red-500">{imageError}</p>
+                                }
+                            </div>
+
+                            {/* location */}
+                            <div>
+                                <label className="label">
+                                    <span className="label-text">Location</span>
+                                </label>
+                                <input name="location" defaultValue={editData.location} className="input input-bordered w-full" />
+                            </div>
+
+                            <div className="modal-action">
+                                <button onClick={() => issueModalRef.current.close()} type="button" className="btn btn-ghost">
+                                    Cancel
+                                </button>
+                                <button type="submit" className="btn btn-primary">
+                                    Update Issue
+                                </button>
+                            </div>
+                        </form>
+                    }
+                </div>
+            </dialog>
         </div>
     );
 };

@@ -401,7 +401,7 @@ const IssueDetails = () => {
                                     Cancel
                                 </button>
                                 <button type="submit" className="btn btn-primary">
-                                    Save Changes
+                                    Update Issue
                                 </button>
                             </div>
                         </form>
