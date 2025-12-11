@@ -122,7 +122,7 @@ const AdminAllIssues = () => {
         });
     };
 
-    if (status === "loading") {
+    if (!issues) {
         return <Loading />;
     }
 
