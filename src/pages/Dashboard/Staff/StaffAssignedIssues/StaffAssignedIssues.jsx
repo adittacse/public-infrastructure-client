@@ -8,35 +8,20 @@ import Loading from "../../../../components/Loading/Loading.jsx";
 import Swal from "sweetalert2";
 
 const StaffAssignedIssues = () => {
+    const [issuesFiltered, setIssuesFiltered] = useState([]);
     const [statusFilter, setStatusFilter] = useState("");
     const [priorityFilter, setPriorityFilter] = useState("");
     const axiosSecure = useAxiosSecure();
     const { user } = useAuth();
     const { role } = useRole();
 
-    const { data: issues = [], isLoading, refetch, isFetching } = useQuery({
+    const { data: assignedIssues = [], refetch } = useQuery({
         queryKey: ["staff-assigned-issues", user?.email, statusFilter, priorityFilter],
         enabled: role === "staff" && !!user?.email,
         queryFn: async () => {
-            const params = new URLSearchParams();
-            if (statusFilter) {
-                params.append("status", statusFilter);
-            }
-            if (priorityFilter) {
-                params.append("priority", priorityFilter);
-            }
-            const url = params.toString()
-                ? `/staff/issues?${params.toString()}`
-                : "/staff/issues";
-
-            const res = await axiosSecure.get(url);
-            // boosted issues আগে দেখাতে চাইলে sort এখানে করতে পারো
-            const sorted = [...res.data].sort((a, b) => {
-                const aBoost = a.isBoosted ? 1 : 0;
-                const bBoost = b.isBoosted ? 1 : 0;
-                return bBoost - aBoost;
-            });
-            return sorted;
+            const res = await axiosSecure.get(`/staff/issues?status=${statusFilter}&priority=${priorityFilter}`);
+            setIssuesFiltered(res.data);
+            return res.data;
         },
     });
 
@@ -106,18 +91,16 @@ const StaffAssignedIssues = () => {
         refetch();
     };
 
-    if (isLoading) {
+    if (!assignedIssues) {
         return <Loading />;
     }
 
     return (
         <div>
-            <h1 className="text-2xl font-bold mb-4">
-                Assigned Issues
-            </h1>
+            <h1 className="text-2xl font-bold mb-10">Assigned Issues</h1>
 
             {/* Filter form */}
-            <form onSubmit={handleFilterSubmit} className="flex flex-wrap gap-2 mb-4 items-center">
+            <form onSubmit={handleFilterSubmit} className="flex flex-wrap gap-2 mb-5 items-center">
                 <select
                     className="select select-bordered select-sm"
                     value={statusFilter}
@@ -141,20 +124,14 @@ const StaffAssignedIssues = () => {
                     <option value="normal">Normal</option>
                 </select>
 
-                <button
-                    type="submit"
-                    className="btn btn-primary btn-sm"
-                    disabled={isFetching}
-                >
-                    {isFetching ? "Filtering..." : "Filter"}
-                </button>
             </form>
 
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto bg-base-100 shadow-2xl rounded-2xl">
                 <table className="table table-zebra">
                     <thead>
                         <tr>
                             <th>Sl.</th>
+                            <th>Image</th>
                             <th>Title</th>
                             <th>Location</th>
                             <th>Priority</th>
@@ -165,7 +142,7 @@ const StaffAssignedIssues = () => {
                     </thead>
                     <tbody>
                         {
-                            issues.length === 0 && (
+                            issuesFiltered.length === 0 && (
                                 <tr>
                                     <td colSpan={7} className="text-center">
                                         No assigned issues found.
@@ -174,28 +151,36 @@ const StaffAssignedIssues = () => {
                             )
                         }
                         {
-                            issues.map((issue, index) => {
+                            issuesFiltered.map((issue, index) => {
                                 const nextStatuses = getNextStatuses(issue.status);
                                 return (
                                     <tr key={issue._id}>
                                         <td>{index + 1}</td>
                                         <td>
-                                            <div className="flex items-center gap-2">
-                                                {issue.isBoosted && (
-                                                    <span className="badge badge-error badge-sm">
-                                                        Boosted
-                                                    </span>
-                                                )}
-                                                <span>{issue.title}</span>
+                                            <div className="avatar">
+                                                <div className="mask mask-squircle h-12 w-12">
+                                                    <img src={issue?.image} alt={issue?.title} />
+                                                </div>
                                             </div>
                                         </td>
-                                        <td>{issue.location || "N/A"}</td>
                                         <td>
-                                            <span className={`badge ${issue.priority === "high" ? "badge-error" : "badge-ghost"}`}>
-                                                {issue.priority === "high" ? "High" : "Normal"}
+                                            <div className="flex items-center gap-2">
+                                                {
+                                                    issue.isBoosted && (
+                                                    <span className="badge badge-error badge-sm">
+                                                        Boosted
+                                                    </span>)
+                                                }
+                                                <span>{issue?.title}</span>
+                                            </div>
+                                        </td>
+                                        <td>{issue?.location}</td>
+                                        <td>
+                                            <span className={`badge ${issue?.priority === "high" ? "badge-error" : "badge-ghost"}`}>
+                                                {issue?.priority === "high" ? "High" : "Normal"}
                                             </span>
                                         </td>
-                                        <td className="capitalize">{issue.status}</td>
+                                        <td className="capitalize">{issue?.status}</td>
                                         <td>
                                             {nextStatuses.length > 0 ? (
                                                 <select
