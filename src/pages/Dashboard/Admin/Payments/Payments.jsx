@@ -38,7 +38,7 @@ const Payments = () => {
             <div className="flex flex-wrap gap-2 mb-5 items-center">
                 <input
                     type="text"
-                    placeholder="Filter by customer name or email"
+                    placeholder="Filter by customer name / email"
                     className="input input-bordered"
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}
@@ -84,15 +84,12 @@ const Payments = () => {
                         {
                             payments.map((payment, idx) => <tr key={payment._id}>
                                 <td>{idx + 1}</td>
-                                {
-                                    console.log(payment)
-                                }
                                 <td>
                                     <div className="flex items-center gap-3">
                                         <div className="avatar">
                                             <div className="mask mask-squircle h-12 w-12">
                                                 <img
-                                                    src="https://img.daisyui.com/images/profile/demo/2@94.webp"
+                                                    src={payment?.customerImage}
                                                     alt={payment?.customerName} />
                                             </div>
                                         </div>

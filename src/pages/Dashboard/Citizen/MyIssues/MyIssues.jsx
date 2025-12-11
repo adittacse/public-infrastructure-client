@@ -263,8 +263,8 @@ const MyIssues = () => {
                         </tr>
                     }
                     {
-                        issues.map((issue, idx) => <tr key={issue._id}>
-                            <td>{idx + 1}</td>
+                        issues.map((issue, index) => <tr key={issue._id}>
+                            <td>{index + 1}</td>
                             <td>
                                 <div className="avatar">
                                     <div className="mask mask-squircle h-12 w-12">

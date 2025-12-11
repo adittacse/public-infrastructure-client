@@ -117,7 +117,8 @@ const CitizenProfile = () => {
             amount: 1000,
             currency: "bdt",
             customerName: user?.displayName,
-            customerEmail: user.email
+            customerEmail: user?.email,
+            customerImage: user?.photoURL
         };
 
         const res = await axiosSecure.post("/create-checkout-session", data);

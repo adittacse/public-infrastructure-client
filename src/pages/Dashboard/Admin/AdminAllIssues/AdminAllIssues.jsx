@@ -23,7 +23,7 @@ const AdminAllIssues = () => {
         queryKey: ["admin-categories"],
         enabled: role === "admin",
         queryFn: async () => {
-            const res = await axiosSecure.get("/admin/categories");
+            const res = await axiosSecure.get("/categories");
             return res.data;
         },
     });
@@ -188,6 +188,7 @@ const AdminAllIssues = () => {
                     <thead>
                         <tr>
                             <th>Sl.</th>
+                            <th>Image</th>
                             <th>Title</th>
                             <th>Category</th>
                             <th>Status</th>
@@ -208,9 +209,18 @@ const AdminAllIssues = () => {
                         {
                             issues.map((issue, index) => <tr key={issue._id}>
                                 <td>{index + 1}</td>
-                                <td>{issue.title}</td>
-                                <td>{issue.category}</td>
-                                <td className="capitalize">{issue.status}</td>
+                                <td>
+                                    <div className="avatar">
+                                        <div className="mask mask-squircle h-12 w-12">
+                                            <img src={issue?.image} alt={issue?.title} />
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{issue?.title}</td>
+                                <td>{issue?.category}</td>
+                                <td className="capitalize">
+                                    {issue?.status?.split("_").join(" ")}
+                                </td>
                                 <td>
                                     {
                                         issue.priority === "high" ? <>

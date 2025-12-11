@@ -51,9 +51,10 @@ const IssueDetails = () => {
         const data = {
             paymentType: "boost_issue",
             issueId: issue._id,
-            issueTitle: issue.title,
-            customerName: user.displayName,
-            customerEmail: user.email,
+            issueTitle: issue?.title,
+            customerName: user?.displayName,
+            customerEmail: user?.email,
+            customerImage: user?.photoURL
         }
 
         const res = await axiosSecure.post("/create-checkout-session", data);
