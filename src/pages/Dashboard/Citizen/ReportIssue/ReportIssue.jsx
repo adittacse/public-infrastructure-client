@@ -1,6 +1,7 @@
-import {useState} from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import useAuth from "../../../../hooks/useAuth.jsx";
+import useRole from "../../../../hooks/useRole.jsx";
 import axios from "axios";
 import useAxiosSecure from "../../../../hooks/useAxiosSecure.jsx";
 import {useQuery} from "@tanstack/react-query";
@@ -11,14 +12,16 @@ import Swal from "sweetalert2";
 const ReportIssue = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { user } = useAuth();
+    const { isBlocked } = useRole();
     const axiosSecure = useAxiosSecure();
     const navigate = useNavigate();
+    console.log(isBlocked);
 
     const {
         register,
         handleSubmit,
         reset,
-        formState: { errors },
+        formState: { errors }
     } = useForm();
 
     // load categories from database
@@ -110,9 +113,17 @@ const ReportIssue = () => {
 
     return (
         <div>
-            <h1 className="text-2xl font-bold mb-4">
-                Report a New Issue
-            </h1>
+            <h1 className="text-2xl font-bold mb-5">Report a New Issue</h1>
+
+            {
+                isBlocked && (
+                    <div className="rounded bg-red-50 text-red-700 text-center text-xs md:text-sm mb-5 p-3">
+                        You are currently <span className="font-semibold">blocked</span> by
+                        the authorities. You cannot submit or boost issues.
+                        Please contact the relevant authority for further assistance.
+                    </div>
+                )
+            }
 
             <form onSubmit={handleSubmit(handleSubmitIssue)} className="grid gap-4 md:grid-cols-2">
                 {/* issue title */}
@@ -206,7 +217,7 @@ const ReportIssue = () => {
                 </div>
 
                 <div className="md:col-span-2 flex justify-end">
-                    <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+                    <button type="submit" className="btn btn-primary" disabled={isSubmitting || isBlocked}>
                         {
                             isSubmitting ? "Submitting..." : "Submit Issue"
                         }

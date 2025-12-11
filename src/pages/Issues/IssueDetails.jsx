@@ -43,8 +43,8 @@ const IssueDetails = () => {
     }
 
     const isOwner = issue.reporterEmail === user?.email;
-    const canEdit = isOwner && issue.status === "pending";
-    const canDelete = isOwner;
+    const canEdit = isOwner && !isBlocked && issue.status === "pending";
+    const canDelete = isOwner && !isBlocked;
     const canBoost = isOwner && !issue.isBoosted && !isBlocked;
 
     const handleBoost = async () => {
@@ -257,7 +257,7 @@ const IssueDetails = () => {
                 {/* Actions */}
                 <div className="space-y-3">
                     {
-                        isOwner && <div className="card bg-base-100 shadow-md">
+                        isOwner && <div className="card bg-base-100 shadow-xl">
                             <div className="card-body">
                                 <h3 className="font-semibold">
                                     Your Actions
@@ -298,9 +298,8 @@ const IssueDetails = () => {
                                 }
 
                                 {
-                                    isBlocked && <p className="mt-3 text-sm text-error">
-                                        You are blocked by admin. You cannot
-                                        boost or submit issues.
+                                    isBlocked && <p className="mt-3 text-sm text-error font-medium">
+                                        You are blocked by admin. You can't edit, delete or boost issues.
                                     </p>
                                 }
                             </div>

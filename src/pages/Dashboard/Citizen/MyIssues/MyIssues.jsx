@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../../../hooks/useAxiosSecure.jsx";
 import useAuth from "../../../../hooks/useAuth.jsx";
+import useRole from "../../../../hooks/useRole.jsx";
 import Loading from "../../../../components/Loading/Loading.jsx";
 import Swal from "sweetalert2";
 
@@ -10,6 +11,7 @@ const MyIssues = () => {
     const [status, setStatus] = useState("");
     const [location, setLocation] = useState("");
     const { user } = useAuth();
+    const { isBlocked } = useRole();
     const axiosSecure = useAxiosSecure();
 
     // get locations to show in filter dropdown
@@ -32,6 +34,16 @@ const MyIssues = () => {
     });
 
     const handleDelete = async (id) => {
+        if (isBlocked) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "You are currently blocked",
+                footer: "Please contact the relevant authority for further assistance."
+            });
+            return;
+        }
+
         Swal.fire({
             title: "Are you sure?",
             text: "You won't be able to revert this!",
