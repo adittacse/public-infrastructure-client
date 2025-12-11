@@ -4,7 +4,7 @@ import useAuth from "../../../../hooks/useAuth.jsx";
 import useRole from "../../../../hooks/useRole.jsx";
 import axios from "axios";
 import useAxiosSecure from "../../../../hooks/useAxiosSecure.jsx";
-import {useQuery} from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import Loading from "../../../../components/Loading/Loading.jsx";
 import Swal from "sweetalert2";
@@ -101,7 +101,7 @@ const ReportIssue = () => {
                         title: "Oops...",
                         text: `${error?.response?.data?.message}`
                     });
-                    navigate("/dashboard/profile", { replace: true });
+                    navigate("/dashboard/citizen-profile", { replace: true });
                 }
             });
     };
@@ -165,10 +165,10 @@ const ReportIssue = () => {
                     </label>
                     <select
                         {...register("category", { required: true })}
-                        defaultValue="Select Category"
+                        defaultValue=""
                         className="select select-bordered w-full"
                     >
-                        <option disabled={true}>Select Category</option>
+                        <option value="" disabled>Select Category</option>
                         {
                             categories.map((category) => (
                             <option key={category._id} value={category?.categoryName}>

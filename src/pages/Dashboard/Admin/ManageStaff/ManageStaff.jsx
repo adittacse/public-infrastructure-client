@@ -283,7 +283,7 @@ const ManageStaff = () => {
                                 <td className="capitalize">{staff?.role}</td>
                                 <td className="space-x-2">
                                     <button onClick={() => openEditModal(staff)} className="btn btn-sm btn-outline btn-primary">
-                                        Edit
+                                        Update
                                     </button>
                                     <button onClick={() => handleDelete(staff)} className="btn btn-sm btn-outline btn-error">
                                         Delete
@@ -299,7 +299,7 @@ const ManageStaff = () => {
             <dialog ref={staffModalRef} className="modal">
                 <div className="modal-box">
                     <h3 className="font-bold text-lg mb-3">
-                        {selectedStaff ? "Edit Staff" : "Add Staff"}
+                        {selectedStaff ? "Update Staff" : "Add Staff"}
                     </h3>
 
                     <form onSubmit={handleRegistration} className="space-y-3">
