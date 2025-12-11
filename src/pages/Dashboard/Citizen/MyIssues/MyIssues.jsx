@@ -9,13 +9,23 @@ import Swal from "sweetalert2";
 
 const MyIssues = () => {
     const [status, setStatus] = useState("");
+    const [category, setCategory] = useState("");
     const [location, setLocation] = useState("");
     const { user } = useAuth();
     const { isBlocked } = useRole();
     const axiosSecure = useAxiosSecure();
 
+    // get categories to show in filter dropdown
+    const { data: categories = [] } = useQuery({
+        queryKey: ["categories"],
+        queryFn: async () => {
+            const res = await axiosSecure.get("/categories");
+            return res.data;
+        },
+    });
+
     // get locations to show in filter dropdown
-    const { data: locations = [], isLoading: isLocationsLoading } = useQuery({
+    const { data: locations = [] } = useQuery({
         queryKey: ["my-issue-locations", user?.email],
         enabled: !!user?.email,
         queryFn: async () => {
@@ -25,17 +35,17 @@ const MyIssues = () => {
     });
 
     const { data: issues = [], isLoading: isIssuesLoading, refetch, isFetching } = useQuery({
-        queryKey: ["my-issues", user?.email, status, location],
+        queryKey: ["my-issues", user?.email, status, category, location],
         enabled: !!user?.email,
         queryFn: async () => {
-            const res = await axiosSecure.get(`/citizen/my-issues?email=${user?.email}&status=${status}&location=${location}`);
+            const res = await axiosSecure.get(`/citizen/my-issues?email=${user?.email}&status=${status}&category=${category}&location=${location}`);
             return res.data;
         },
     });
 
     const handleDelete = async (id) => {
         if (isBlocked) {
-            Swal.fire({
+            await Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "You are currently blocked",
@@ -77,7 +87,7 @@ const MyIssues = () => {
         });
     };
 
-    if (isIssuesLoading || isLocationsLoading) {
+    if (isIssuesLoading) {
         return <Loading />;
     }
 
@@ -104,10 +114,23 @@ const MyIssues = () => {
 
                 <select
                     className="select select-bordered"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                >
+                    <option value="">Categories (All)</option>
+                    {
+                        categories.map((category) => <option key={category._id} value={category.categoryName}>
+                            {category?.categoryName}
+                        </option>)
+                    }
+                </select>
+
+                <select
+                    className="select select-bordered"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                 >
-                    <option value="">Location (All)</option>
+                    <option value="">My Reported Location (All)</option>
                     {
                         locations.map((location) =>
                             <option key={location} value={location}>
@@ -116,10 +139,6 @@ const MyIssues = () => {
                         )
                     }
                 </select>
-
-                {
-                    isFetching && <span className="text-xs text-gray-500">Updating…</span>
-                }
             </div>
 
             <div className="overflow-x-auto bg-base-100 shadow-2xl rounded-2xl">
