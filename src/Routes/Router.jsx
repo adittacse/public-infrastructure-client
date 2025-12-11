@@ -23,6 +23,8 @@ import AdminProfile from "../pages/Dashboard/Admin/AdminProfile/AdminProfile.jsx
 import CitizenProfile from "../pages/Dashboard/Citizen/CitizenProfile/CitizenProfile.jsx";
 import PaymentSuccess from "../pages/Dashboard/Payment/PaymentSuccess.jsx";
 import PaymentCancelled from "../pages/Dashboard/Payment/PaymentCancelled.jsx";
+import Payments from "../pages/Dashboard/Admin/Payments/Payments.jsx";
+import PaymentInvoice from "../pages/Dashboard/Admin/Payments/PaymentInvoice.jsx";
 
 const Router = createBrowserRouter([
     {
@@ -52,10 +54,16 @@ const Router = createBrowserRouter([
     {
         path: "dashboard",
         element: <PrivateRoute><DashboardLayout /></PrivateRoute>,
+        hydrateFallbackElement: <Loading />,
         children: [
             {
                 index: true,
                 element: <DashboardHome />
+            },
+            {
+                path: "invoice/:id",
+                loader: ({ params }) => fetch(`/invoice/${params.id}`),
+                element: <PaymentInvoice />
             },
             // citizen dashboard
             {
@@ -94,6 +102,10 @@ const Router = createBrowserRouter([
             {
                 path: "manage-staff",
                 element: <AdminRoute><ManageStaff /></AdminRoute>
+            },
+            {
+                path: "payments",
+                element: <AdminRoute><Payments /></AdminRoute>
             },
             {
                 path: "admin-profile",

@@ -1,4 +1,5 @@
 import React from "react";
+import { FaBangladeshiTakaSign } from "react-icons/fa6";
 
 const StatsCards = ({ totalIssues, pending, inProgress, working, resolved, closed, rejected, totalPayments }) => {
     return (
@@ -47,8 +48,8 @@ const StatsCards = ({ totalIssues, pending, inProgress, working, resolved, close
             </div>
             <div className="stat bg-base-100 shadow rounded-box">
                 <div className="stat-title">Total Payments</div>
-                <div className="stat-value text-success-content">
-                    {totalPayments}$
+                <div className="stat-value text-success-content flex items-center">
+                    {totalPayments} <FaBangladeshiTakaSign />
                 </div>
             </div>
         </div>
