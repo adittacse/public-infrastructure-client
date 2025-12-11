@@ -253,6 +253,7 @@ const ManageStaff = () => {
                         <th>Sl.</th>
                         <th>Staff</th>
                         <th>Email</th>
+                        <th>Role</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
@@ -279,6 +280,7 @@ const ManageStaff = () => {
                                     </div>
                                 </td>
                                 <td>{staff?.email}</td>
+                                <td className="capitalize">{staff?.role}</td>
                                 <td className="space-x-2">
                                     <button onClick={() => openEditModal(staff)} className="btn btn-sm btn-outline btn-primary">
                                         Edit

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import useAxiosSecure from "../../../../hooks/useAxiosSecure.jsx";
 import useRole from "../../../../hooks/useRole.jsx";
 import { useQuery } from "@tanstack/react-query";
@@ -7,16 +7,15 @@ import Swal from "sweetalert2";
 
 const ManageUsers = () => {
     const [usersFiltered, setUsersFiltered] = useState([]);
+    const [searchText, setSearchText] = useState("");
     const axiosSecure = useAxiosSecure();
     const { role } = useRole();
-    const searchRef = useRef(null);
 
     const { data: users = [], isLoading, refetch } = useQuery({
-        queryKey: ["all-users"],
+        queryKey: ["all-users", searchText],
         enabled: role === "admin",
         queryFn: async () => {
-            // const res = await axiosSecure.get(`/admin/citizens?search=${searchText}`);
-            const res = await axiosSecure.get("/admin/users");
+            const res = await axiosSecure.get(`/admin/users?searchText=${searchText}`);
             setUsersFiltered(res.data);
             return res.data;
         },
@@ -121,7 +120,7 @@ const ManageUsers = () => {
                             await refetch();
                             Swal.fire({
                                 title: "Deleted!",
-                                text: "User has been deleted.",
+                                text: "Citizen has been deleted.",
                                 icon: "success"
                             });
                         }
@@ -130,31 +129,14 @@ const ManageUsers = () => {
                         Swal.fire({
                             icon: "error",
                             title: "Oops...",
-                            text: `${error.message}`
+                            text: `${error?.message}`
                         });
                     });
             }
         });
     }
 
-    const handleSearch = () => {
-        const text = searchRef.current.value.trim().toLowerCase();
-        setTimeout(() => {
-            if (text === "") {
-                setUsersFiltered(users);
-            } else {
-                const result = users.filter(user => user.displayName.toLowerCase().includes(text));
-                if (result.length === 0) {
-                    const result = users.filter(user => user.email.toLowerCase().includes(text));
-                    setUsersFiltered(result);
-                } else {
-                    setUsersFiltered(result);
-                }
-            }
-        }, 0);
-    }
-
-    if (isLoading) {
+    if (!users) {
         return <Loading />;
     }
 
@@ -169,7 +151,7 @@ const ManageUsers = () => {
                         <path d="m21 21-4.3-4.3"></path>
                     </g>
                 </svg>
-                <input ref={searchRef} onChange={handleSearch} type="search" placeholder="Search by name or email" />
+                <input value={searchText} onChange={(e) => setSearchText(e.target.value)} type="search" placeholder="Search by name or email" />
             </label>
 
             <div className="overflow-x-auto bg-base-100 shadow-2xl rounded-2xl">
