@@ -82,10 +82,9 @@ const AllIssues = () => {
 
     // get locations to show in filter dropdown
     const { data: locations = [] } = useQuery({
-        queryKey: ["my-issue-locations", user?.email],
-        enabled: !!user?.email,
+        queryKey: ["my-issue-locations"],
         queryFn: async () => {
-            const res = await axiosSecure.get("/locations/issue-locations");
+            const res = await axiosInstance.get("/locations/issue-locations");
             return res.data;
         }
     });
