@@ -11,15 +11,16 @@ const StaffAssignedIssues = () => {
     const [issuesFiltered, setIssuesFiltered] = useState([]);
     const [statusFilter, setStatusFilter] = useState("");
     const [priorityFilter, setPriorityFilter] = useState("");
+    const [searchText, setSearchText] = useState("");
     const axiosSecure = useAxiosSecure();
     const { user } = useAuth();
     const { role } = useRole();
 
     const { data: assignedIssues = [], refetch } = useQuery({
-        queryKey: ["staff-assigned-issues", user?.email, statusFilter, priorityFilter],
+        queryKey: ["staff-assigned-issues", user?.email, statusFilter, priorityFilter, searchText],
         enabled: role === "staff" && !!user?.email,
         queryFn: async () => {
-            const res = await axiosSecure.get(`/staff/issues?status=${statusFilter}&priority=${priorityFilter}`);
+            const res = await axiosSecure.get(`/staff/issues?status=${statusFilter}&priority=${priorityFilter}&searchText=${searchText}`);
             setIssuesFiltered(res.data);
             return res.data;
         },
@@ -40,7 +41,9 @@ const StaffAssignedIssues = () => {
         }
     };
 
-    const handleChangeStatus = (issue, newStatus) => {
+    const handleChangeStatus = (issue, selectEl) => {
+        const newStatus = selectEl.value;
+
         if (!newStatus) return;
 
         Swal.fire({
@@ -52,43 +55,36 @@ const StaffAssignedIssues = () => {
             cancelButtonColor: "#d33",
             confirmButtonText: "Yes, change"
         }).then(async (result) => {
-            if (!result.isConfirmed) return;
-
-            try {
-                const body = {
-                    newStatus,
-                    issueId: issue._id
-                };
-                const res = await axiosSecure.patch(`/staff/issues/${issue._id}/status`, body);
-
-                if (res.data.modifiedCount || res.data.success) {
-                    Swal.fire({
-                        icon: "success",
-                        title: "Status updated",
-                        timer: 1200,
-                        showConfirmButton: false,
-                    });
-                    await refetch();
-                } else {
-                    Swal.fire({
-                        icon: "info",
-                        title: "No change",
-                        text: "Status was not updated.",
-                    });
-                }
-            } catch (error) {
-                await Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: `${error?.response?.data?.message || error?.message}`
-                });
+            if (!result.isConfirmed) {
+                selectEl.value = "";
+                return;
             }
-        });
-    };
 
-    const handleFilterSubmit = (e) => {
-        e.preventDefault();
-        refetch();
+            const body = {
+                newStatus,
+                issueId: issue._id
+            };
+
+            await axiosSecure.patch(`/staff/issues/${issue._id}/status`, body)
+                .then(async (res) => {
+                    if (res.data.modifiedCount) {
+                        await Swal.fire({
+                            icon: "success",
+                            title: "Status updated",
+                            timer: 1200,
+                            showConfirmButton: false,
+                        });
+                        await refetch();
+                    }
+                })
+                .catch(async (error) => {
+                    await Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: `${error?.response?.data?.message || error?.message}`
+                    });
+                })
+        });
     };
 
     if (!assignedIssues) {
@@ -100,9 +96,9 @@ const StaffAssignedIssues = () => {
             <h1 className="text-2xl font-bold mb-10">Assigned Issues</h1>
 
             {/* Filter form */}
-            <form onSubmit={handleFilterSubmit} className="flex flex-wrap gap-2 mb-5 items-center">
+            <div className="flex flex-wrap items-center gap-2 mb-5">
                 <select
-                    className="select select-bordered select-sm"
+                    className="select select-bordered"
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
                 >
@@ -115,7 +111,7 @@ const StaffAssignedIssues = () => {
                 </select>
 
                 <select
-                    className="select select-bordered select-sm"
+                    className="select select-bordered"
                     value={priorityFilter}
                     onChange={(e) => setPriorityFilter(e.target.value)}
                 >
@@ -124,7 +120,16 @@ const StaffAssignedIssues = () => {
                     <option value="normal">Normal</option>
                 </select>
 
-            </form>
+                <label className="input">
+                    <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none" stroke="currentColor">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.3-4.3"></path>
+                        </g>
+                    </svg>
+                    <input value={searchText} onChange={(e) => setSearchText(e.target.value)} type="search" placeholder="Search by issue title / reporter name" />
+                </label>
+            </div>
 
             <div className="overflow-x-auto bg-base-100 shadow-2xl rounded-2xl">
                 <table className="table table-zebra">
@@ -132,7 +137,7 @@ const StaffAssignedIssues = () => {
                         <tr>
                             <th>Sl.</th>
                             <th>Image</th>
-                            <th>Title</th>
+                            <th>Issue</th>
                             <th>Location</th>
                             <th>Priority</th>
                             <th>Status</th>
@@ -164,15 +169,16 @@ const StaffAssignedIssues = () => {
                                             </div>
                                         </td>
                                         <td>
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-2 mb-1">
                                                 {
                                                     issue.isBoosted && (
-                                                    <span className="badge badge-error badge-sm">
+                                                    <span className="badge badge-success badge-sm">
                                                         Boosted
                                                     </span>)
                                                 }
                                                 <span>{issue?.title}</span>
                                             </div>
+                                            <p className="text-gray-500">By: {issue?.reporterName}</p>
                                         </td>
                                         <td>{issue?.location}</td>
                                         <td>
@@ -180,14 +186,14 @@ const StaffAssignedIssues = () => {
                                                 {issue?.priority === "high" ? "High" : "Normal"}
                                             </span>
                                         </td>
-                                        <td className="capitalize">{issue?.status}</td>
+                                        <td className="capitalize">{issue?.status?.split("_").join(" ")}</td>
                                         <td>
                                             {nextStatuses.length > 0 ? (
                                                 <select
-                                                    className="select select-bordered select-xs"
+                                                    className="select select-bordered"
                                                     defaultValue=""
                                                     onChange={(e) =>
-                                                        handleChangeStatus(issue, e.target.value)
+                                                        handleChangeStatus(issue, e.target)
                                                     }
                                                 >
                                                     <option value="" disabled>
@@ -200,16 +206,13 @@ const StaffAssignedIssues = () => {
                                                     ))}
                                                 </select>
                                             ) : (
-                                                <span className="text-xs text-gray-400">
+                                                <span className="text-gray-400">
                                                     Final status
                                                 </span>
                                             )}
                                         </td>
                                         <td>
-                                            <Link
-                                                to={`/issues/${issue._id}`}
-                                                className="btn btn-xs btn-primary"
-                                            >
+                                            <Link to={`/issues/${issue._id}`} className="btn btn-sm btn-primary">
                                                 View
                                             </Link>
                                         </td>

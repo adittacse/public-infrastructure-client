@@ -77,7 +77,7 @@ const useProfileUpdate = ({ role, profile, refetch, reset }) => {
 
             await handleUpdateProfile(updatedProfile);
         } catch (error) {
-            Swal.fire({
+            await Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: `${error?.response?.data?.message || error?.message}`
