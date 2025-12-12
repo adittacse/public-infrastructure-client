@@ -44,8 +44,6 @@ const StaffAssignedIssues = () => {
     const handleChangeStatus = (issue, selectEl) => {
         const newStatus = selectEl.value;
 
-        if (!newStatus) return;
-
         Swal.fire({
             title: "Change status?",
             text: `Change status from ${issue.status} to ${newStatus}?`,
@@ -188,28 +186,27 @@ const StaffAssignedIssues = () => {
                                         </td>
                                         <td className="capitalize">{issue?.status?.split("_").join(" ")}</td>
                                         <td>
-                                            {nextStatuses.length > 0 ? (
-                                                <select
-                                                    className="select select-bordered"
-                                                    defaultValue=""
-                                                    onChange={(e) =>
-                                                        handleChangeStatus(issue, e.target)
-                                                    }
-                                                >
-                                                    <option value="" disabled>
-                                                        Change...
-                                                    </option>
-                                                    {nextStatuses.map((status) => (
-                                                        <option key={status} value={status}>
-                                                            {status.replace("_", " ")}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            ) : (
-                                                <span className="text-gray-400">
-                                                    Final status
-                                                </span>
-                                            )}
+                                            {
+                                                nextStatuses.length > 0 ? <>
+                                                    <select
+                                                        className="select select-bordered"
+                                                        defaultValue=""
+                                                        onChange={(e) => handleChangeStatus(issue, e.target)}
+                                                    >
+                                                        <option value="" disabled>Change...</option>
+                                                        {
+                                                            nextStatuses.map((status) => (
+                                                            <option key={status} value={status}>
+                                                                {status.replace("_", " ")}
+                                                            </option>))
+                                                        }
+                                                    </select>
+                                                </> : <>
+                                                    <span className="text-gray-400">
+                                                        Final status
+                                                    </span>
+                                                </>
+                                            }
                                         </td>
                                         <td>
                                             <Link to={`/issues/${issue._id}`} className="btn btn-sm btn-primary">
