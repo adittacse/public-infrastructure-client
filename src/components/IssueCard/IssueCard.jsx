@@ -16,9 +16,9 @@ const IssueCard = ({ issue, onUpvote }) => {
                     <div className="badge badge-outline">{category}</div>
                     <div className="flex gap-2">
                         <span
-                            className={`badge ${status === "pending" ? "badge-warning" : 
+                            className={`badge capitalize ${status === "pending" ? "badge-warning" : 
                                     status === "resolved" ? "badge-success" : "badge-info"}`}>
-                            {status}
+                            {status?.split("_").join(" ")}
                         </span>
                         <span
                             className={`badge ${priority === "high" ? "badge-error" : "badge-ghost"}`}>

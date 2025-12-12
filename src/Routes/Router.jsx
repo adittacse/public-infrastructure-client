@@ -19,14 +19,12 @@ import ManageStaff from "../pages/Dashboard/Admin/ManageStaff/ManageStaff.jsx";
 import ManageCategories from "../pages/Dashboard/Admin/ManageCategories/ManageCategories.jsx";
 import StaffRoute from "./StaffRoute.jsx";
 import StaffAssignedIssues from "../pages/Dashboard/Staff/StaffAssignedIssues/StaffAssignedIssues.jsx";
-import AdminProfile from "../pages/Dashboard/Admin/AdminProfile/AdminProfile.jsx";
-import CitizenProfile from "../pages/Dashboard/Citizen/CitizenProfile/CitizenProfile.jsx";
 import PaymentSuccess from "../pages/Dashboard/Payment/PaymentSuccess.jsx";
 import PaymentCancelled from "../pages/Dashboard/Payment/PaymentCancelled.jsx";
 import Payments from "../pages/Dashboard/Admin/Payments/Payments.jsx";
 import PaymentInvoice from "../pages/Dashboard/Admin/Payments/PaymentInvoice.jsx";
-import StaffProfile from "../pages/Dashboard/Staff/StaffProfile/StaffProfile.jsx";
 import Profile from "../pages/Dashboard/Profile/Profile.jsx";
+import AllIssues from "../pages/Issues/AllIssues.jsx";
 
 const Router = createBrowserRouter([
     {
@@ -45,6 +43,10 @@ const Router = createBrowserRouter([
             {
                 path: "register",
                 element: <Register />
+            },
+            {
+                path: "all-issues",
+                element: <AllIssues />
             },
             {
                 path: "issues/:id",
