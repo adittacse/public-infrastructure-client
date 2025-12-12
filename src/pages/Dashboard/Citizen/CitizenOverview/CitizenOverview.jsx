@@ -51,7 +51,7 @@ const CitizenOverview = () => {
 
     return (
         <div>
-            <h1 className="text-2xl font-bold mb-10">Dashboard Overview</h1>
+            <h1 className="text-2xl font-bold mb-10">Citizen Dashboard Overview</h1>
 
             <div className="grid md:grid-cols-4 gap-4 mb-6">
                 <div className="stat bg-base-100 shadow">

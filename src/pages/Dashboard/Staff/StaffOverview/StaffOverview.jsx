@@ -46,9 +46,7 @@ const StaffOverview = () => {
 
     return (
         <div>
-            <h1 className="text-2xl font-bold mb-4">
-                Staff Dashboard Overview
-            </h1>
+            <h1 className="text-2xl font-bold mb-10">Staff Dashboard Overview</h1>
 
             {/* Top Stats */}
             <div className="stats bg-base-100 shadow w-full mb-6">

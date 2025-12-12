@@ -17,7 +17,7 @@ const CitizenChart = ({ statusChartData, paymentsChartData }) => {
                             <YAxis allowDecimals={false} />
                             <Tooltip />
                             <Legend />
-                            <Bar dataKey="count" />
+                            <Bar dataKey="count" fill="#8884d8" />
                         </BarChart>
                     </div>
                 </div>
