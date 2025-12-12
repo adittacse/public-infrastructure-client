@@ -26,6 +26,7 @@ import PaymentCancelled from "../pages/Dashboard/Payment/PaymentCancelled.jsx";
 import Payments from "../pages/Dashboard/Admin/Payments/Payments.jsx";
 import PaymentInvoice from "../pages/Dashboard/Admin/Payments/PaymentInvoice.jsx";
 import StaffProfile from "../pages/Dashboard/Staff/StaffProfile/StaffProfile.jsx";
+import Profile from "../pages/Dashboard/Profile/Profile.jsx";
 
 const Router = createBrowserRouter([
     {
@@ -66,6 +67,10 @@ const Router = createBrowserRouter([
                 loader: ({ params }) => fetch(`/invoice/${params.id}`),
                 element: <PaymentInvoice />
             },
+            {
+                path: "profile",
+                element: <Profile />
+            },
             // citizen dashboard
             {
                 path: "report-issue",
@@ -74,10 +79,6 @@ const Router = createBrowserRouter([
             {
                 path: "my-issues",
                 element: <CitizenRoute><MyIssues /></CitizenRoute>
-            },
-            {
-                path: "citizen-profile",
-                element: <CitizenRoute><CitizenProfile /></CitizenRoute>
             },
             {
                 path: "payment-success",
@@ -108,18 +109,10 @@ const Router = createBrowserRouter([
                 path: "payments",
                 element: <AdminRoute><Payments /></AdminRoute>
             },
-            {
-                path: "admin-profile",
-                element: <AdminRoute><AdminProfile /></AdminRoute>
-            },
             // staff dashboard
             {
                 path: "assigned-issues",
                 element: <StaffRoute><StaffAssignedIssues /></StaffRoute>
-            },
-            {
-                path: "staff-profile",
-                element: <StaffRoute><StaffProfile /></StaffRoute>
             }
         ]
     },

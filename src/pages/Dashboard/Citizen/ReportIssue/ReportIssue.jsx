@@ -101,7 +101,7 @@ const ReportIssue = () => {
                         title: "Oops...",
                         text: `${error?.response?.data?.message}`
                     });
-                    navigate("/dashboard/citizen-profile", { replace: true });
+                    navigate("/dashboard/profile", { replace: true });
                 }
             });
     };

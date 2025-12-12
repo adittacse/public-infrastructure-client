@@ -115,7 +115,7 @@ const PaymentSuccess = () => {
                     }
                     {
                         paymentInfo?.paymentType === "subscription" && (
-                        <Link to="/dashboard/citizen-profile" className="btn btn-ghost btn-sm">
+                        <Link to="/dashboard/profile" className="btn btn-ghost btn-sm">
                             View Profile
                         </Link>)
                     }
