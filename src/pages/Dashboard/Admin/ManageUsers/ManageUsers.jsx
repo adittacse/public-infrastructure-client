@@ -181,7 +181,7 @@ const ManageUsers = () => {
                             <td>
                                 <div className="flex items-center gap-2">
                                     <div className="avatar">
-                                        <div className="w-8 rounded-full">
+                                        <div className="mask mask-squircle h-12 w-12">
                                             <img src={user?.photoURL} alt={user?.displayName} />
                                         </div>
                                     </div>
@@ -233,18 +233,18 @@ const ManageUsers = () => {
                                 }
                                 {
                                     user?.role === "citizen" && <>
-                                        <button onClick={() => handleChangeRole(user, "admin")} className="btn btn-xs btn-warning mr-2">Make Admin</button>
-                                        <button onClick={() => handleChangeRole(user, "staff")} className="btn btn-xs btn-primary">Make Staff</button>
+                                        <button onClick={() => handleChangeRole(user, "admin")} className="btn btn-sm btn-warning mr-2">Make Admin</button>
+                                        <button onClick={() => handleChangeRole(user, "staff")} className="btn btn-sm btn-primary">Make Staff</button>
                                     </>
                                 }
                             </td>
                             <td>
-                                <button onClick={() => handleBlockToggle(user)} className={`btn btn-xs mr-2 ${user.isBlocked ? "btn-success" : "btn-error"}`}>
+                                <button onClick={() => handleBlockToggle(user)} className={`btn btn-sm btn-outline mr-2 ${user.isBlocked ? "btn-success" : "btn-error"}`}>
                                     {
                                         user.isBlocked ? "Unblock" : "Block"
                                     }
                                 </button>
-                                <button onClick={() => handleDeleteUser(user._id)} className="btn btn-xs btn-error">Delete</button>
+                                <button onClick={() => handleDeleteUser(user._id)} className="btn btn-sm btn-outline btn-error">Delete</button>
                             </td>
                         </tr>)
                     }

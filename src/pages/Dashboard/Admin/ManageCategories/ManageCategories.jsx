@@ -11,6 +11,7 @@ const ManageCategories = () => {
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
+    const [searchText, setSearchText] = useState("");
     const axiosSecure = useAxiosSecure();
     const { role } = useRole();
 
@@ -31,10 +32,10 @@ const ManageCategories = () => {
     } = useForm();
 
     const { data: categories = [], isLoading, refetch } = useQuery({
-        queryKey: ["categories"],
+        queryKey: ["categories", searchText],
         enabled: role === "admin",
         queryFn: async () => {
-            const res = await axiosSecure.get("/categories");
+            const res = await axiosSecure.get(`/categories?searchText=${searchText}`);
             return res.data;
         },
     });
@@ -137,7 +138,9 @@ const ManageCategories = () => {
         });
     }
 
-    if (isLoading) return <Loading />;
+    if (!categories) {
+        return <Loading />;
+    }
 
     return (
         <div>
@@ -146,6 +149,16 @@ const ManageCategories = () => {
 
                 {/* add category */}
                 <div className="mb-6">
+                    <label className="input mb-5">
+                        <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none" stroke="currentColor">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.3-4.3"></path>
+                            </g>
+                        </svg>
+                        <input value={searchText} onChange={(e) => setSearchText(e.target.value)} type="search" placeholder="Search by category name" />
+                    </label>
+
                     <form onSubmit={handleSubmit(onSubmit)} className="card bg-base-100 shadow-2xl flex gap-2 py-6">
                         <h2 className="text-xl font-semibold text-center mb-2">Add New Category</h2>
                         <fieldset className="fieldset card-body space-y-1">
@@ -174,7 +187,7 @@ const ManageCategories = () => {
                             <tr>
                                 <th>Sl.</th>
                                 <th>Category Name</th>
-                                <th>Total Issues</th>
+                                <th>Issues Count</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -192,10 +205,10 @@ const ManageCategories = () => {
                                     <td>{category?.categoryName}</td>
                                     <td>{category?.issuesCount}</td>
                                     <td className="flex gap-2">
-                                        <button className="btn btn-xs btn-info" onClick={() => openEditModal(category)}>
+                                        <button className="btn btn-sm btn-info" onClick={() => openEditModal(category)}>
                                             Edit
                                         </button>
-                                        <button className="btn btn-xs btn-error" onClick={() => handleDelete(category)}>
+                                        <button className="btn btn-sm btn-error" onClick={() => handleDelete(category)}>
                                             Delete
                                         </button>
                                     </td>

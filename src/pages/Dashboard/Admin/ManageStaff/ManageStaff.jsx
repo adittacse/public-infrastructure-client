@@ -272,7 +272,7 @@ const ManageStaff = () => {
                                 <td>
                                     <div className="flex items-center gap-2">
                                         <div className="avatar">
-                                            <div className="w-8 rounded-full">
+                                            <div className="mask mask-squircle h-12 w-12">
                                                 <img src={staff?.photoURL} alt={staff?.displayName} />
                                             </div>
                                         </div>

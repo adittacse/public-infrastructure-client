@@ -45,7 +45,7 @@ const AdminProfile = () => {
                     <div className="card-body">
                         <div className="flex items-center gap-4">
                             <div className="avatar">
-                                <div className="w-16 rounded-full">
+                                <div className="w-16 rounded-full border">
                                     <img src={profile?.photoURL} alt={profile?.displayName} />
                                 </div>
                             </div>
