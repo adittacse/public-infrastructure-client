@@ -1,19 +1,15 @@
-import { useState } from "react";
 import useAxiosSecure from "../../../../hooks/useAxiosSecure.jsx";
 import useAuth from "../../../../hooks/useAuth.jsx";
 import useRole from "../../../../hooks/useRole.jsx";
 import { useForm } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
-import Swal from "sweetalert2";
-import axios from "axios";
 import Loading from "../../../../components/Loading/Loading.jsx";
+import useProfileUpdate from "../../../../hooks/useProfileUpdate.jsx";
 
 const CitizenProfile = () => {
-    const [imageError, setImageError] = useState("");
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { user } = useAuth();
+    const { role, isPremium, isBlocked } = useRole();
     const axiosSecure = useAxiosSecure();
-    const { user, updateUserProfile, setLoading } = useAuth();
-    const { isPremium, isBlocked } = useRole();
 
     const {
         register,
@@ -22,7 +18,7 @@ const CitizenProfile = () => {
         formState: { errors }
     } = useForm();
 
-    const { data: profile, isLoading, refetch } = useQuery({
+    const { data: profile, isLoading, refetch: profileRefetch } = useQuery({
         queryKey: ["user-profile", user?.email],
         enabled: !!user?.email,
         queryFn: async () => {
@@ -31,84 +27,11 @@ const CitizenProfile = () => {
         }
     });
 
-    const handleUpdateProfile = async (data) => {
-        await updateUserProfile(user, {
-            displayName: data.displayName,
-            photoURL: data?.photoURL
-        })
-            .then(async () => {
-                await axiosSecure.patch(`/citizen/profile/${profile._id}`, data)
-                    .then(async (res) => {
-                        if (res.data.modifiedCount) {
-                            await refetch();
-                            reset();
-                            setLoading(false);
-                            Swal.fire({
-                                icon: "success",
-                                title: "Profile updated",
-                                timer: 1500,
-                                showConfirmButton: false,
-                            });
-                        }
-                    })
-                    .catch((error) => {
-                        Swal.fire({
-                            icon: "error",
-                            title: "Oops...",
-                            text: `${error.message}`
-                        });
-                    });
-            })
-            .catch((error) => {
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: `${error.message}`
-                });
-            });
-    }
-
-    const onSubmit = async (data) => {
-        setImageError("");
-        setIsSubmitting(true);
-
-        try {
-            const imageFile = data?.photoURL?.[0];
-
-            const updatedProfile = {
-                displayName: data.displayName,
-            };
-
-            if (imageFile) {
-                if (!imageFile.type.startsWith("image/")) {
-                    setImageError("Only image files are allowed");
-                    setIsSubmitting(false);
-                    return;
-                }
-
-                const formData = new FormData();
-                formData.append("image", imageFile);
-
-                const res = await axios.post(
-                    `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMAGE_HOST_KEY}`,
-                    formData
-                );
-
-                updatedProfile.photoURL = res.data.data.url;
-            }
-
-            await handleUpdateProfile(updatedProfile);
-        } catch (error) {
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: error.message,
-            });
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
+    const { onSubmit, imageError, isSubmitting } = useProfileUpdate({
+        role: role,
+        profile,
+        refetch: profileRefetch
+    });
 
     // stripe subscription – only if not premium & not blocked
     const handleSubscribe = async () => {
@@ -133,8 +56,8 @@ const CitizenProfile = () => {
         <div>
             <h1 className="text-2xl font-bold mb-10">My Profile</h1>
 
-            <div className="max-w-2xl mx-auto">
-                {/* Top profile card */}
+            <div className="max-w-lg mx-auto">
+                {/* top profile card */}
                 <div className="card bg-base-100 shadow items-center mb-6">
                     <div className="card-body w-full">
                         <div className="flex items-center mx-auto gap-4">
@@ -213,7 +136,7 @@ const CitizenProfile = () => {
                     </div>
                 </div>
 
-                {/* Update profile form */}
+                {/* update profile form */}
                 <form onSubmit={handleSubmit(onSubmit)} className="card bg-base-100 shadow">
                     <fieldset className="fieldset card-body space-y-2 py-8">
                         {/* display name */}

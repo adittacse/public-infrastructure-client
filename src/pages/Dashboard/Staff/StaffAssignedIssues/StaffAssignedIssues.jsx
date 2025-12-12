@@ -77,10 +77,10 @@ const StaffAssignedIssues = () => {
                     });
                 }
             } catch (error) {
-                Swal.fire({
+                await Swal.fire({
                     icon: "error",
-                    title: "Failed",
-                    text: error?.response?.data?.message || error.message,
+                    title: "Oops...",
+                    text: `${error?.response?.data?.message || error?.message}`
                 });
             }
         });
