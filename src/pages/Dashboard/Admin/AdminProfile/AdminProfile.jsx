@@ -18,9 +18,9 @@ const AdminProfile = () => {
 
     const { data: profile, isLoading, refetch: profileRefetch } = useQuery({
         queryKey: ["user-profile", user?.email],
-        enabled: !!user?.email,
+        enabled: role === "admin",
         queryFn: async () => {
-            const res = await axiosSecure.get(`/admin/profile?email=${user.email}`);
+            const res = await axiosSecure.get(`/admin/profile?email=${user?.email}`);
             return res.data;
         }
     });

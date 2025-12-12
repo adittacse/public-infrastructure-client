@@ -19,9 +19,9 @@ const StaffProfile = () => {
 
     const { data: profile, isLoading, refetch: profileRefetch } = useQuery({
         queryKey: ["staff-profile", user?.email],
-        enabled: role === "staff" && !!user?.email,
+        enabled: role === "staff",
         queryFn: async () => {
-            const res = await axiosSecure.get(`/staff/profile?email=${user.email}`);
+            const res = await axiosSecure.get(`/staff/profile?email=${user?.email}`);
             return res.data;
         }
     });
