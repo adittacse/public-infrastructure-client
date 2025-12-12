@@ -2,7 +2,7 @@ import useAxiosSecure from "../../../../hooks/useAxiosSecure.jsx";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../../../../components/Loading/Loading.jsx";
 import { FaBangladeshiTakaSign } from "react-icons/fa6";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend } from "recharts";
+import CitizenChart from "./CitizenChart.jsx";
 
 const CitizenOverview = () => {
     const axiosSecure = useAxiosSecure();
@@ -42,7 +42,7 @@ const CitizenOverview = () => {
                 day: "2-digit",
                 month: "short",
             }),
-            amount: payment?.amount || 0,
+            amount: payment?.amount || 0
         }));
 
     const totalIssues = statusStats.reduce((sum, s) => sum + s.count, 0);
@@ -85,9 +85,7 @@ const CitizenOverview = () => {
             {/* payments summary card */}
             <div className="card bg-base-100 shadow mb-6">
                 <div className="card-body">
-                    <h2 className="card-title">
-                        Payments & Boost History
-                    </h2>
+                    <h2 className="card-title">Payments & Boost History</h2>
                     <p className="text-sm text-gray-700 mb-2">
                         <span>You paid for {paymentsCount} time</span>
                         <span className="flex items-center">Total payments: BDT {totalPayments} <FaBangladeshiTakaSign /></span>
@@ -95,57 +93,7 @@ const CitizenOverview = () => {
                 </div>
             </div>
 
-            <div className="grid lg:grid-cols-2 gap-6">
-                {/* status distribution chart */}
-                <div className="card bg-base-100 shadow">
-                    <div className="card-body">
-                        <h2 className="card-title text-sm md:text-base">
-                            Issue Status Overview
-                        </h2>
-                        <div className="w-full h-64 min-w-0">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={statusChartData}>
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" />
-                                    <YAxis allowDecimals={false} />
-                                    <Tooltip />
-                                    <Legend />
-                                    <Bar dataKey="count" />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </div>
-                </div>
-
-                {/* payments over time chart */}
-                <div className="card bg-base-100 shadow">
-                    <div className="card-body">
-                        <h2 className="card-title text-sm md:text-base">
-                            Payments Over Time
-                        </h2>
-                        {
-                            paymentsChartData.length === 0 ? <>
-                                <p className="text-sm text-gray-500">
-                                    No payments yet.
-                                </p>
-                            </>: <>
-                                <div className="w-full h-64 min-w-0">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <LineChart data={paymentsChartData}>
-                                            <CartesianGrid strokeDasharray="3 3" />
-                                            <XAxis dataKey="name" />
-                                            <YAxis allowDecimals={false} />
-                                            <Tooltip />
-                                            <Legend />
-                                            <Line type="monotone" dataKey="amount" />
-                                        </LineChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </>
-                        }
-                    </div>
-                </div>
-            </div>
+            <CitizenChart statusChartData={statusChartData} paymentsChartData={paymentsChartData} />
         </div>
     );
 };
