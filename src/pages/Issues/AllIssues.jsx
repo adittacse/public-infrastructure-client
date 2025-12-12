@@ -129,7 +129,7 @@ const AllIssues = () => {
         }
     };
 
-    if (!data || issues.length === 0) {
+    if (!data) {
         return <Loading />;
     }
 
