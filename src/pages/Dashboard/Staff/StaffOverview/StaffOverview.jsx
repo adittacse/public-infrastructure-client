@@ -3,6 +3,7 @@ import useAuth from "../../../../hooks/useAuth.jsx";
 import useRole from "../../../../hooks/useRole.jsx";
 import useAxiosSecure from "../../../../hooks/useAxiosSecure.jsx";
 import Loading from "../../../../components/Loading/Loading.jsx";
+import StaffChart from "./StaffChart.jsx";
 
 const StaffOverview = () => {
     const axiosSecure = useAxiosSecure();
@@ -33,6 +34,16 @@ const StaffOverview = () => {
         totalIssues = 0
     } = overview;
 
+    const statusChartData = [
+        { name: "Total Assigned", count: totalIssues },
+        { name: "In Progress", count: inProgressCount },
+        { name: "In Working", count: workingCount },
+        { name: "Resolved", count: resolvedCount },
+        { name: "Closed", count: closedCount },
+        { name: "Today's Tasks", count: todayTasksCount },
+        { name: "Boosted", count: boostedIssuesCount },
+    ];
+
     return (
         <div>
             <h1 className="text-2xl font-bold mb-4">
@@ -40,7 +51,7 @@ const StaffOverview = () => {
             </h1>
 
             {/* Top Stats */}
-            <div className="stats shadow w-full mb-6">
+            <div className="stats bg-base-100 shadow w-full mb-6">
                 <div className="stat">
                     <div className="stat-title">Total Assigned Issues</div>
                     <div className="stat-value text-primary">
@@ -104,8 +115,10 @@ const StaffOverview = () => {
                 </div>
             </div>
 
+            <StaffChart statusChartData={statusChartData} />
+
             {/* Summary Card */}
-            <div className="card bg-base-100 shadow">
+            <div className="card bg-base-100 shadow mt-6">
                 <div className="card-body">
                     <h2 className="card-title">Summary</h2>
                     <p className="text-sm text-gray-600">
