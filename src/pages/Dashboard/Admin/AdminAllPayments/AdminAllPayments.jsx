@@ -1,17 +1,17 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 import useRole from "../../../../hooks/useRole.jsx";
 import useAxiosSecure from "../../../../hooks/useAxiosSecure.jsx";
 import Loading from "../../../../components/Loading/Loading.jsx";
 import { FaBangladeshiTakaSign } from "react-icons/fa6";
+import InvoiceDocument from "../../../../components/Invoice/InvoiceDocument.jsx";
 
-const Payments = () => {
+const AdminAllPayments = () => {
     const [searchText, setSearchText] = useState("");
     const [paymentType, setPaymentType] = useState("");
     const { role } = useRole();
     const axiosSecure = useAxiosSecure();
-    const navigate = useNavigate();
 
     const { data: payments = [], isFetching } = useQuery({
         queryKey: ["admin-payments", searchText, paymentType],
@@ -22,23 +22,19 @@ const Payments = () => {
         }
     });
 
-    const handleDownloadInvoice = (payment) => {
-        navigate(`/dashboard/invoice/${payment._id}`);
-    };
-
     if (!payments) {
         return <Loading />;
     }
 
     return (
         <div>
-            <h1 className="text-2xl font-bold mb-10">Payments</h1>
+            <h1 className="text-2xl font-bold mb-10">All Payments</h1>
 
             {/* filter data */}
             <div className="flex flex-wrap gap-2 mb-5 items-center">
                 <input
                     type="text"
-                    placeholder="Filter by customer name / email"
+                    placeholder="Filter by customer name / email / transaction id"
                     className="input input-bordered"
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}
@@ -69,6 +65,7 @@ const Payments = () => {
                             <th>Type</th>
                             <th>Issue / Subscription</th>
                             <th>Date</th>
+                            <th>Transaction Id</th>
                             <th>Invoice</th>
                         </tr>
                     </thead>
@@ -108,15 +105,32 @@ const Payments = () => {
                                     {payment?.paymentType.split("_").join(" ")}
                                 </td>
                                 <td>
-                                    {payment?.issueTitle || payment?.subscriptionLabel || "Profile"}
-                                </td>
-                                <td className="text-xs">
-                                    {new Date(payment?.paidAt).toLocaleString()}
+                                    {payment?.issueTitle || "Profile"}
                                 </td>
                                 <td>
-                                    <button onClick={() => handleDownloadInvoice(payment)} className="btn btn-xs btn-outline">
-                                        Download
-                                    </button>
+                                    {new Date(payment?.paidAt).toLocaleString("en-BD", {
+                                        day: "2-digit",
+                                        month: "short",
+                                        year: "numeric",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        hour12: true
+                                    })}
+                                </td>
+                                <td>{payment?.transactionId}</td>
+                                <td>
+                                    <PDFDownloadLink
+                                        document={<InvoiceDocument payment={payment} />}
+                                        fileName={`invoice-${payment._id}.pdf`}
+                                    >
+                                        {
+                                            ({ loading }) => (
+                                                <button className="btn btn-sm btn-primary">
+                                                    {loading ? "Generating..." : "Download"}
+                                                </button>
+                                            )
+                                        }
+                                    </PDFDownloadLink>
                                 </td>
                             </tr>)
                         }
@@ -127,4 +141,4 @@ const Payments = () => {
     );
 };
 
-export default Payments;
+export default AdminAllPayments;

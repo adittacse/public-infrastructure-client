@@ -21,8 +21,8 @@ import StaffRoute from "./StaffRoute.jsx";
 import StaffAssignedIssues from "../pages/Dashboard/Staff/StaffAssignedIssues/StaffAssignedIssues.jsx";
 import PaymentSuccess from "../pages/Dashboard/Payment/PaymentSuccess.jsx";
 import PaymentCancelled from "../pages/Dashboard/Payment/PaymentCancelled.jsx";
-import Payments from "../pages/Dashboard/Admin/Payments/Payments.jsx";
-import PaymentInvoice from "../pages/Dashboard/Admin/Payments/PaymentInvoice.jsx";
+import AdminAllPayments from "../pages/Dashboard/Admin/AdminAllPayments/AdminAllPayments.jsx";
+import CitizenPayments from "../pages/Dashboard/Citizen/CitizenPayments/CitizenPayments.jsx";
 import Profile from "../pages/Dashboard/Profile/Profile.jsx";
 import AllIssues from "../pages/Issues/AllIssues.jsx";
 
@@ -65,11 +65,6 @@ const Router = createBrowserRouter([
                 element: <DashboardHome />
             },
             {
-                path: "invoice/:id",
-                loader: ({ params }) => fetch(`/invoice/${params.id}`),
-                element: <PaymentInvoice />
-            },
-            {
                 path: "profile",
                 element: <Profile />
             },
@@ -90,6 +85,10 @@ const Router = createBrowserRouter([
                 path: "payment-cancelled",
                 element: <CitizenRoute><PaymentCancelled /></CitizenRoute>
             },
+            {
+                path: "citizen-payments",
+                element: <CitizenRoute><CitizenPayments /></CitizenRoute>
+            },
             // admin dashboard
             {
                 path: "all-issues",
@@ -108,8 +107,8 @@ const Router = createBrowserRouter([
                 element: <AdminRoute><ManageStaff /></AdminRoute>
             },
             {
-                path: "payments",
-                element: <AdminRoute><Payments /></AdminRoute>
+                path: "all-payments",
+                element: <AdminRoute><AdminAllPayments /></AdminRoute>
             },
             // staff dashboard
             {

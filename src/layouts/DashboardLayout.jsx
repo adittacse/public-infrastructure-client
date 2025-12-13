@@ -77,6 +77,16 @@ const DashboardLayout = () => {
                             >
                                 Report Issue
                             </NavLink>
+
+                            <NavLink to="/dashboard/citizen-payments"
+                                     className={({ isActive }) =>
+                                         `btn btn-sm btn-block justify-start ${
+                                             isActive ? "btn-primary" : "btn-ghost"
+                                         }`
+                                     }
+                            >
+                                My Payments
+                            </NavLink>
                         </>
                     }
 
@@ -166,14 +176,14 @@ const DashboardLayout = () => {
                             </NavLink>
 
                             <NavLink
-                                to="/dashboard/payments"
+                                to="/dashboard/all-payments"
                                 className={({ isActive }) =>
                                     `btn btn-sm btn-block justify-start ${
                                         isActive ? "btn-primary" : "btn-ghost"
                                     }`
                                 }
                             >
-                                Payments
+                                All Payments
                             </NavLink>
                         </>
                     }

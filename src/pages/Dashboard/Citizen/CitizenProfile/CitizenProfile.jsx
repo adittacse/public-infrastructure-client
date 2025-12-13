@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import useAxiosSecure from "../../../../hooks/useAxiosSecure.jsx";
 import useAuth from "../../../../hooks/useAuth.jsx";
 import useRole from "../../../../hooks/useRole.jsx";
@@ -124,14 +125,23 @@ const CitizenProfile = () => {
                                 </div>
                             }
 
-                            {/* Subscribe button – only if not premium & not blocked */}
-                            {
-                                !isPremium && !isBlocked && <div className="mt-3">
-                                    <button onClick={handleSubscribe} className="btn btn-sm btn-warning">
-                                        Subscribe for 1000৳
-                                    </button>
+                            <div className="flex flex-col md:flex-row items-center justify-between">
+                                {/* Subscribe button – only if not premium & not blocked */}
+                                {
+                                    !isPremium && !isBlocked && <div className="mt-3">
+                                        <button onClick={handleSubscribe} className="btn btn-sm btn-warning">
+                                            Subscribe for 1000৳
+                                        </button>
+                                    </div>
+                                }
+
+
+                                <div className="mt-3">
+                                    <Link to="/dashboard/citizen-payments" className="btn btn-sm btn-primary">
+                                        View payment history & invoices
+                                    </Link>
                                 </div>
-                            }
+                            </div>
                         </div>
                     </div>
                 </div>
