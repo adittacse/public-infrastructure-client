@@ -91,29 +91,27 @@ const AllIssues = () => {
             return;
         }
 
-        try {
-            const res = await axiosSecure.patch(`/issues/${id}/upvote`);
-            if (res.data.modifiedCount || res.data.upsertedId || res.data) {
-                await Swal.fire({
-                    icon: "success",
-                    title: "Upvoted",
-                    text: "Thanks for your feedback.",
-                    timer: 1200,
-                    showConfirmButton: false,
-                });
+        await axiosSecure.patch(`/issues/${id}/upvote`)
+            .then(async (res) => {
+                if (res.data.modifiedCount) {
+                    await Swal.fire({
+                        icon: "success",
+                        title: "Upvoted",
+                        text: "Thanks for your upvote.",
+                        timer: 1500,
+                        showConfirmButton: false,
+                    });
 
-                // await fetchIssues();
-                await refetch();
-            }
-        } catch (error) {
-            await Swal.fire({
-                icon: "error",
-                title: "Failed",
-                text:
-                    error.response?.data?.message ||
-                    "Could not upvote this issue.",
+                    await refetch();
+                }
+            })
+            .catch((error) => {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: `${error?.response?.data?.message || error?.message}`,
+                });
             });
-        }
     };
 
     if (!data) {
