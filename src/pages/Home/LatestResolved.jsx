@@ -14,7 +14,7 @@ const LatestResolved = () => {
             const res = await axios.get("/issues/latest-resolved");
             return res.data;
         }
-    })
+    });
     const navigate = useNavigate();
 
     const handleUpvote = (id) => {
