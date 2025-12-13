@@ -125,18 +125,20 @@ const CitizenProfile = () => {
                                 </div>
                             }
 
-                            <div className="flex flex-col md:flex-row items-center justify-between">
+                            <div className="flex flex-col md:flex-row items-center justify-between mt-4">
                                 {/* Subscribe button – only if not premium & not blocked */}
-                                {
-                                    !isPremium && !isBlocked && <div className="mt-3">
-                                        <button onClick={handleSubscribe} className="btn btn-sm btn-warning">
-                                            Subscribe for 1000৳
-                                        </button>
-                                    </div>
-                                }
+                                <div>
+                                    {
+                                        !isPremium && !isBlocked && <div>
+                                            <button onClick={handleSubscribe} className="btn btn-sm btn-warning">
+                                                Subscribe for 1000৳
+                                            </button>
+                                        </div>
+                                    }
+                                </div>
 
 
-                                <div className="mt-3">
+                                <div>
                                     <Link to="/dashboard/citizen-payments" className="btn btn-sm btn-primary">
                                         View payment history & invoices
                                     </Link>

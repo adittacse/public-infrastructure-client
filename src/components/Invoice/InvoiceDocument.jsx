@@ -105,12 +105,23 @@ const InvoiceDocument = ({ payment, user }) => {
                         )
                     }
 
-                    {payment.paymentType === "boost_issue" && payment.issueTitle && (
+                    {payment?.paymentType === "boost_issue" && payment?.issueTitle && (
                         <View style={styles.row}>
                             <Text>Issue Title:</Text>
                             <Text>{payment?.issueTitle}</Text>
                         </View>
                     )}
+
+                    {
+                        payment?.subscriptionTitle && (
+                            <View style={styles.row}>
+                                <Text>Subscribed For:</Text>
+                                <Text style={styles.capitalize}>
+                                    {payment?.subscriptionTitle}
+                                </Text>
+                            </View>
+                        )
+                    }
 
                     <View style={styles.row}>
                         <Text>Payment Status:</Text>

@@ -35,7 +35,7 @@ const CitizenPayments = () => {
             <div className="flex flex-wrap gap-2 mb-5 items-center">
                 <input
                     type="text"
-                    placeholder="Filter by transaction id"
+                    placeholder="Filter by issue / subscription / transaction id"
                     className="input input-bordered"
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}
@@ -97,8 +97,8 @@ const CitizenPayments = () => {
                             <td className="capitalize">
                                 {payment?.paymentType?.split("_").join(" ")}
                             </td>
-                            <td>
-                                {payment?.issueTitle || "Profile"}
+                            <td className="capitalize">
+                                {payment?.issueTitle || payment?.subscriptionTitle}
                             </td>
                             <td>{payment?.transactionId}</td>
                             <td>
