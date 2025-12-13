@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import useAxios from "../../hooks/useAxios.jsx";
 import useAxiosSecure from "../../hooks/useAxiosSecure.jsx";
 import useAuth from "../../hooks/useAuth.jsx";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import Loading from "../../components/Loading/Loading.jsx";
 import IssueCard from "../../components/IssueCard/IssueCard.jsx";
 import Pagination from "../../components/Pagination/Pagination.jsx";
@@ -27,23 +27,11 @@ const AllIssues = () => {
     const safeLimit = limit === 0 ? 0 : limit > 0 ? limit : 10;
 
     const { data, refetch } = useQuery({
-        queryKey: ["issues", {
-            page: currentPage, limit: safeLimit, search, status, priority, category, location
-        }],
+        queryKey: ["issues", currentPage, safeLimit, search, status, priority, category, location],
+        placeholderData: keepPreviousData,
         queryFn: async () => {
-            // const res = await axiosInstance.get(`/issues?currentPage=${currentPage}&safeLimit=${safeLimit}&search=${search}&status=${status}&priority=${priority}&category=${category}&location=${location}`);
-            const res = await axiosInstance.get("/issues", {
-                params: {
-                    page: currentPage,
-                    limit: safeLimit,
-                    search,
-                    status,
-                    priority,
-                    category,
-                    location,
-                },
-            });
-
+            const url = `/issues?page=${currentPage}&limit=${safeLimit}&search=${search}&status=${status}&priority=${priority}&category=${category}&location=${location}`;
+            const res = await axiosInstance.get(url);
             const data = res.data || {};
 
             return {
@@ -57,8 +45,7 @@ const AllIssues = () => {
                     last_page: data.last_page || 1,
                 }
             };
-        },
-        keepPreviousData: true,
+        }
     });
 
     const issues = data?.issues || [];
@@ -116,7 +103,7 @@ const AllIssues = () => {
                 });
 
                 // await fetchIssues();
-                await refetch(); // ---------------------------------
+                await refetch();
             }
         } catch (error) {
             await Swal.fire({
@@ -171,7 +158,10 @@ const AllIssues = () => {
                 <select
                     className="select select-bordered"
                     value={category}
-                    onChange={(e) => setCategory(e.target.value)}
+                    onChange={(e) => {
+                        setCurrentPage(1);
+                        setCategory(e.target.value);
+                    }}
                 >
                     <option value="">All Categories</option>
                     {
@@ -184,7 +174,10 @@ const AllIssues = () => {
                 <select
                     className="select select-bordered"
                     value={location}
-                    onChange={(e) => setLocation(e.target.value)}
+                    onChange={(e) => {
+                        setCurrentPage(1);
+                        setLocation(e.target.value);
+                    }}
                 >
                     <option value="">All Locations</option>
                     {
@@ -251,8 +244,9 @@ const AllIssues = () => {
                 </>
             }
 
-
-            <Pagination pagination={pagination} onPageChange={setCurrentPage} />
+            {
+                safeLimit !== 0 && <Pagination pagination={pagination} onPageChange={setCurrentPage} />
+            }
         </div>
     );
 };
