@@ -25,6 +25,8 @@ import AdminAllPayments from "../pages/Dashboard/Admin/AdminAllPayments/AdminAll
 import CitizenPayments from "../pages/Dashboard/Citizen/CitizenPayments/CitizenPayments.jsx";
 import Profile from "../pages/Dashboard/Profile/Profile.jsx";
 import AllIssues from "../pages/Issues/AllIssues.jsx";
+import Pricing from "../pages/Pricing/Pricing.jsx";
+import HelpCenter from "../pages/HelpCenter/HelpCenter.jsx";
 
 const Router = createBrowserRouter([
     {
@@ -52,13 +54,20 @@ const Router = createBrowserRouter([
                 path: "issues/:id",
                 loader: ({ params }) => fetch(`/issues/${params.id}`),
                 element: <PrivateRoute><IssueDetails /></PrivateRoute>
+            },
+            {
+                path: "pricing",
+                element: <Pricing />
+            },
+            {
+                path: "help",
+                element: <HelpCenter />
             }
         ]
     },
     {
         path: "dashboard",
         element: <PrivateRoute><DashboardLayout /></PrivateRoute>,
-        hydrateFallbackElement: <Loading />,
         children: [
             {
                 index: true,
