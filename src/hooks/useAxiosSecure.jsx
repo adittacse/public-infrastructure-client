@@ -1,12 +1,11 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import useAuth from "./useAuth.jsx";
-// import { auth } from "../firebase/firebase.init.js";
 import axios from "axios";
 import Swal from "sweetalert2";
 
 const axiosInstance = axios.create({
-    baseURL: "http://localhost:3000"
+    baseURL: "https://public-infrastructure-server.onrender.com"
 });
 
 const useAxiosSecure = () => {
