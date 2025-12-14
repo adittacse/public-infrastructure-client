@@ -40,21 +40,21 @@ const WhyReportSection = () => {
 
                 <div className="grid md:grid-cols-4 sm:grid-cols-2 gap-4 md:gap-6">
                     {
-                        features.map((item) => <>
+                        features.map((item) =>
                             <div key={item.title} className="card bg-base-200 shadow-sm border border-base-300 h-full">
                                 <div className="card-body items-start">
                                     <div className="text-3xl mb-2">
-                                        {item.icon}
+                                        {item?.icon}
                                     </div>
                                     <h3 className="font-semibold text-base md:text-lg">
-                                        {item.title}
+                                        {item?.title}
                                     </h3>
                                     <p className="text-xs md:text-sm text-gray-600 mt-1 leading-relaxed">
-                                        {item.description}
+                                        {item?.description}
                                     </p>
                                 </div>
                             </div>
-                        </>)
+                        )
                     }
                 </div>
             </div>

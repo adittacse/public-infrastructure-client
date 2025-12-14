@@ -72,6 +72,7 @@ const StaffAssignedIssues = () => {
                             timer: 1200,
                             showConfirmButton: false,
                         });
+                        selectEl.value = "";
                         await refetch();
                     }
                 })

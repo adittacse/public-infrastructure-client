@@ -36,21 +36,21 @@ const CommunityImpact = () => {
 
                 <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
                     {
-                        stats.map((item) => <>
+                        stats.map((item) =>
                             <div key={item.label} className="card bg-base-100 shadow-md border border-base-300">
                                 <div className="card-body items-center text-center py-6">
                                     <div className="text-2xl md:text-3xl font-bold text-primary">
-                                        {item.value}
+                                        {item?.value}
                                     </div>
                                     <div className="mt-1 font-semibold text-sm md:text-base">
-                                        {item.label}
+                                        {item?.label}
                                     </div>
                                     <p className="mt-1 text-xs md:text-sm text-gray-500">
-                                        {item.description}
+                                        {item?.description}
                                     </p>
                                 </div>
                             </div>
-                        </>)
+                        )
                     }
                 </div>
             </div>

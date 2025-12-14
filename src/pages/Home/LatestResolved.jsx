@@ -1,5 +1,6 @@
 import useAuth from "../../hooks/useAuth.jsx";
 import useAxios from "../../hooks/useAxios.jsx";
+import useAxiosSecure from "../../hooks/useAxiosSecure.jsx";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
@@ -8,7 +9,9 @@ import IssueCard from "../../components/IssueCard/IssueCard.jsx";
 const LatestResolved = () => {
     const { user } = useAuth();
     const axios = useAxios();
-    const { data: latestIssues = [], isLoading } = useQuery({
+    const axiosSecure = useAxiosSecure();
+
+    const { data: latestIssues = [], isLoading, refetch } = useQuery({
         queryKey: ["latest-resolved-issues"],
         queryFn: async () => {
             const res = await axios.get("/issues/latest-resolved");
@@ -17,7 +20,7 @@ const LatestResolved = () => {
     });
     const navigate = useNavigate();
 
-    const handleUpvote = (id) => {
+    const handleUpvote = async (id) => {
         if (!user) {
             Swal.fire({
                 icon: "info",
@@ -29,8 +32,31 @@ const LatestResolved = () => {
                     navigate("/login");
                 }
             });
+            return;
         }
-    }
+
+        await axiosSecure.patch(`/issues/${id}/upvote`)
+            .then(async (res) => {
+                if (res.data.modifiedCount) {
+                    await Swal.fire({
+                        icon: "success",
+                        title: "Upvoted",
+                        text: "Thanks for your upvote.",
+                        timer: 1500,
+                        showConfirmButton: false,
+                    });
+
+                    await refetch();
+                }
+            })
+            .catch((error) => {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: `${error?.response?.data?.message || error?.message}`,
+                });
+            });
+    };
 
     return (
         <section className="py-10 max-w-6xl mx-auto px-4">
