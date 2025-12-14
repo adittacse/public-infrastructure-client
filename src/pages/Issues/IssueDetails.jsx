@@ -198,7 +198,7 @@ const IssueDetails = () => {
                             className={`badge capitalize ${
                                 issue?.status === "pending" ? "badge-warning"
                                     : issue?.status === "resolved" ||
-                                    issue?.status === "closed" ? "badge-success" : "badge-info"
+                                    issue?.status === "closed" ? "badge-success" : issue?.status === "rejected" ? "badge-error" : "badge-info"
                             }`}
                         >
                             {

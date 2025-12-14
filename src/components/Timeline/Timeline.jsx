@@ -22,7 +22,7 @@ const Timeline = ({ logs }) => {
                                         : log?.status === "resolved" ||
                                         log?.status === "closed"
                                             ? "badge-success"
-                                            : "badge-info"
+                                            : log?.status === "rejected" ? "badge-error" : "badge-info"
                                 }`}
                             >
                                 {log?.status?.split("_").join(" ")}
