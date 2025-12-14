@@ -27,9 +27,8 @@ const CommunityImpact = () => {
     return (
         <section className="py-12 md:py-16 bg-base-200">
             <div className="max-w-6xl mx-auto px-4">
-                <h2 className="text-2xl md:text-3xl font-bold text-center mb-2">
-                    Community Impact
-                </h2>
+                <h2 className="text-3xl md:text-3xl font-bold text-center mb-2">Community Impact</h2>
+
                 <p className="text-center text-sm md:text-base text-gray-600 mb-8">
                     Our platform connects citizens with authorities to improve roads, streetlights, waste management and more.
                 </p>

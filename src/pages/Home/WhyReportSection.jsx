@@ -31,9 +31,8 @@ const WhyReportSection = () => {
     return (
         <section className="py-12 md:py-16 bg-base-100">
             <div className="max-w-6xl mx-auto px-4">
-                <h2 className="text-2xl md:text-3xl font-bold text-center mb-2">
-                    Why Use This Platform?
-                </h2>
+                <h2 className="text-3xl md:text-3xl font-bold text-center mb-2">Why Use This Platform?</h2>
+
                 <p className="text-center text-sm md:text-base text-gray-500 mb-8">
                     Empower citizens and authorities to work together for better roads, lights, cleanliness and public safety.
                 </p>

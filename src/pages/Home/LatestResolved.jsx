@@ -61,9 +61,8 @@ const LatestResolved = () => {
     return (
         <section className="py-10 max-w-6xl mx-auto px-4">
             <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold">
-                    Latest Resolved Issues
-                </h2>
+                <h2 className="text-3xl font-bold">Latest Resolved Issues</h2>
+
                 <button
                     onClick={() => navigate("/all-issues")}
                     className="btn btn-ghost btn-sm"
