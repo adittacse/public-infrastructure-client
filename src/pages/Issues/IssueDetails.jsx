@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import useAxiosSecure from "../../hooks/useAxiosSecure.jsx";
 import useAuth from "../../hooks/useAuth.jsx";
+import { useForm } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 import useRole from "../../hooks/useRole.jsx";
 import Loading from "../../components/Loading/Loading.jsx";
@@ -12,12 +13,28 @@ import Swal from "sweetalert2";
 const IssueDetails = () => {
     const [editData, setEditData] = useState(null);
     const [imageError, setImageError] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const { id } = useParams();
     const axiosSecure = useAxiosSecure();
     const { user } = useAuth();
     const { role, isPremium, isBlocked } = useRole();
     const navigate = useNavigate();
     const issueModalRef = useRef(null);
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors }
+    } = useForm();
+
+    // load categories from database
+    const { data: categories = [], isLoading: categoryLoading } = useQuery({
+        queryKey: ["categories"],
+        queryFn: async () => {
+            const res = await axiosSecure.get("/categories");
+            return res.data;
+        },
+    });
 
     const { data, isLoading, refetch } = useQuery({
         queryKey: ["issue-details", id],
@@ -29,10 +46,6 @@ const IssueDetails = () => {
 
     const issue = data?.issue;
     const logs = data?.timelines || [];
-
-    if (isLoading) {
-        return <Loading />;
-    }
 
     if (!issue) {
         return (
@@ -76,6 +89,7 @@ const IssueDetails = () => {
         await axiosSecure.patch(`/citizen/issues/${id}`, data)
             .then((res) => {
                 if (res.data.modifiedCount) {
+                    setIsSubmitting(false);
                     Swal.fire({
                         icon: "success",
                         title: "Issue updated",
@@ -88,19 +102,20 @@ const IssueDetails = () => {
                 }
             })
             .catch((error) => {
+                setIsSubmitting(false);
                 Swal.fire({
                     icon: "error",
                     title: "Oops...",
-                    text: `${error.message}`
+                    text: `${error?.message}`
                 });
             });
     }
 
-    const handleEditSubmit = async (e) => {
-        e.preventDefault();
+    const handleEditSubmit = async (data) => {
+        setIsSubmitting(true);
         setImageError("");
 
-        const imageFile = e.target?.image?.files[0];
+        const imageFile = data?.image[0];
         if (imageFile) {
             if (!imageFile.type.startsWith("image/")) {
                 setImageError("Only image files are allowed");
@@ -117,28 +132,29 @@ const IssueDetails = () => {
                     const photoURL = res.data.data.url;
 
                     const updatedIssue = {
-                        title: e.target.title.value,
-                        description: e.target.description.value,
-                        category: e.target.category.value,
+                        title: data.title,
+                        description: data.description,
+                        category: data.category,
                         image: photoURL,
-                        location: e.target.location.value,
+                        location: data.location,
                     };
 
                     await handlePatchData(updatedIssue);
                 })
                 .catch((error) => {
+                    setIsSubmitting(false);
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: `${error.message}`
+                        text: `${error?.message}`
                     });
                 });
         } else {
             const updatedIssue = {
-                title: e.target.title.value,
-                description: e.target.description.value,
-                category: e.target.category.value,
-                location: e.target.location.value,
+                title: data.title,
+                description: data.description,
+                category: data.category,
+                location: data.location,
             };
 
             await handlePatchData(updatedIssue);
@@ -162,7 +178,9 @@ const IssueDetails = () => {
                             Swal.fire({
                                 title: "Deleted!",
                                 text: "Your issue has been deleted.",
-                                icon: "success"
+                                icon: "success",
+                                timer: 1500,
+                                showConfirmButton: false
                             });
                             navigate("/dashboard/my-issues");
                         }
@@ -171,11 +189,15 @@ const IssueDetails = () => {
                         Swal.fire({
                             icon: "error",
                             title: "Oops...",
-                            text: `${error.message}`
+                            text: `${error?.message}`
                         });
                     });
             }
         });
+    }
+
+    if (isLoading || categoryLoading) {
+        return <Loading />;
     }
 
     return (
@@ -341,13 +363,15 @@ const IssueDetails = () => {
                 <div className="modal-box">
                     <h3 className="font-bold text-lg mb-3">Edit Issue</h3>
                     {
-                        editData && <form onSubmit={handleEditSubmit} className="space-y-3">
+                        editData && <form onSubmit={handleSubmit(handleEditSubmit)} className="space-y-3">
                             {/* report title */}
                             <div>
                                 <label className="label">
                                     <span className="label-text">Title</span>
                                 </label>
-                                <input name="title" defaultValue={editData.title} className="input input-bordered w-full" required />
+                                <input {...register("title", { required: true })} defaultValue={editData.title} className="input input-bordered w-full" required />
+                                {errors.title &&
+                                    <p className="text-red-500 text-sm">Title is required</p>}
                             </div>
 
                             {/* description */}
@@ -355,7 +379,9 @@ const IssueDetails = () => {
                                 <label className="label">
                                     <span className="label-text">Description</span>
                                 </label>
-                                <textarea name="description" defaultValue={editData.description} className="textarea textarea-bordered w-full" rows={3} required></textarea>
+                                <textarea {...register("description", { required: true })} defaultValue={editData.description} className="textarea textarea-bordered w-full" rows={3} required></textarea>
+                                {errors.description &&
+                                    <p className="text-red-500 text-sm">Description is required</p>}
                             </div>
 
                             {/* category */}
@@ -363,30 +389,17 @@ const IssueDetails = () => {
                                 <label className="label">
                                     <span className="label-text">Category</span>
                                 </label>
-                                <select
-                                    name="category"
-                                    defaultValue={editData.category}
-                                    className="select select-bordered w-full"
-                                >
-                                    <option value="">Select Category</option>
-                                    <option value="Streetlight">Streetlight</option>
-                                    <option value="Road / Pothole">Road / Pothole</option>
-                                    <option value="Water Leakage">Water Leakage</option>
-                                    <option value="Garbage">Garbage</option>
-                                    <option value="Footpath">Footpath</option>
-                                    <option value="Other">Other</option>
+                                <select {...register("category", { required: true })} defaultValue={editData.category} className="select select-bordered w-full">
+                                    <option value="" disabled>Select Category</option>
+                                    {
+                                        categories.map((category) => (
+                                            <option key={category._id} value={category?.categoryName}>
+                                                {category?.categoryName}
+                                            </option>))
+                                    }
                                 </select>
-                            </div>
-
-                            {/* image */}
-                            <div>
-                                <label className="label">
-                                    <span className="label-text">Image</span>
-                                </label>
-                                <input name="image" type="file" className="file-input w-full" />
-                                {
-                                    imageError && <p className="text-red-500">{imageError}</p>
-                                }
+                                {errors.category &&
+                                    <p className="text-red-500 text-sm">Category is required</p>}
                             </div>
 
                             {/* location */}
@@ -394,15 +407,30 @@ const IssueDetails = () => {
                                 <label className="label">
                                     <span className="label-text">Location</span>
                                 </label>
-                                <input name="location" defaultValue={editData.location} className="input input-bordered w-full" />
+                                <input {...register("location", { required: true })} defaultValue={editData.location} className="input input-bordered w-full" />
+                                {errors.location &&
+                                    <p className="text-red-500 text-sm">Location is required</p>}
+                            </div>
+
+                            {/* image */}
+                            <div>
+                                <label className="label">
+                                    <span className="label-text">Image</span>
+                                </label>
+                                <input {...register("image")} type="file" className="file-input w-full" />
+                                {
+                                    imageError && <p className="text-red-500">{imageError}</p>
+                                }
                             </div>
 
                             <div className="modal-action">
                                 <button onClick={() => issueModalRef.current.close()} type="button" className="btn btn-ghost">
                                     Cancel
                                 </button>
-                                <button type="submit" className="btn btn-primary">
-                                    Update Issue
+                                <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+                                    {
+                                        isSubmitting ? "Updating..." : "Update Issue"
+                                    }
                                 </button>
                             </div>
                         </form>
