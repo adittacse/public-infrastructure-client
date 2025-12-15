@@ -272,7 +272,7 @@ const ManageStaff = () => {
                                 <td>
                                     <div className="flex items-center gap-2">
                                         <UserAvatar photoURL={staff?.photoURL} name={staff?.displayName} />
-                                        <span>{staff?.displayName}</span>
+                                        <span className="font-semibold">{staff?.displayName}</span>
                                     </div>
                                 </td>
                                 <td>{staff?.email}</td>

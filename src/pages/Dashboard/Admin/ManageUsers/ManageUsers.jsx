@@ -45,7 +45,7 @@ const ManageUsers = () => {
                 await axiosSecure.patch(`/admin/users/${user._id}/role`, { role: newRole })
                     .then(async (res) => {
                         if (res.data.modifiedCount) {
-                            Swal.fire({
+                            await Swal.fire({
                                 icon: "success",
                                 title: "Role updated",
                                 timer: 1500,
@@ -58,7 +58,7 @@ const ManageUsers = () => {
                         Swal.fire({
                             icon: "error",
                             title: "Oops...",
-                            text: `${error.message}`,
+                            text: `${error?.response?.data?.message || error?.message}`
                         });
                     });
             }
@@ -184,7 +184,7 @@ const ManageUsers = () => {
                                     <UserAvatar photoURL={user?.photoURL} name={user?.displayName} />
 
                                     <div>
-                                        <div className="font-bold">{user?.displayName}</div>
+                                        <div className="font-semibold">{user?.displayName}</div>
                                         <div className="text-sm opacity-50">{user?.email}</div>
                                     </div>
                                 </div>

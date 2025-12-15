@@ -44,9 +44,9 @@ const ManageAdmins = () => {
                     <thead>
                     <tr>
                         <th>Sl.</th>
-                        <th>User</th>
+                        <th>Image</th>
+                        <th>Name</th>
                         <th>Email</th>
-                        <th>Subscription</th>
                         <th>Role</th>
                     </tr>
                     </thead>
@@ -64,24 +64,10 @@ const ManageAdmins = () => {
                             <td>
                                 <div className="flex items-center gap-2">
                                     <UserAvatar photoURL={admin?.photoURL} name={admin?.displayName} />
-
-                                    <div className="font-bold">{admin?.displayName}</div>
                                 </div>
                             </td>
+                            <td className="font-medium">{admin?.displayName}</td>
                             <td>{admin?.email}</td>
-                            <td>
-                                {
-                                    admin.isPremium ? <>
-                                        <span className="badge badge-success">
-                                            Premium
-                                        </span>
-                                    </> : <>
-                                        <span className="badge badge-ghost">
-                                            Free
-                                        </span>
-                                    </>
-                                }
-                            </td>
                             <td className="capitalize">{admin?.role}</td>
                         </tr>)
                     }
