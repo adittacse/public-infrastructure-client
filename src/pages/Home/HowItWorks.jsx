@@ -3,7 +3,7 @@ import React from "react";
 const HowItWorks = () => {
     return (
         <section className="py-10 bg-base-200">
-            <h2 className="text-3xl font-bold text-center mb-5">How It Works</h2>
+            <h2 className="text-3xl font-bold text-center mb-8">How It Works</h2>
 
             <div className="flex justify-center">
                 <ul className="steps steps-vertical md:steps-horizontal">

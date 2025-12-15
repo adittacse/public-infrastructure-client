@@ -5,6 +5,7 @@ import useRole from "../../../../hooks/useRole.jsx";
 import { useForm } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../../../../components/Loading/Loading.jsx";
+import UserAvatar from "../../../../components/UserAvatar/UserAvatar.jsx";
 import useProfileUpdate from "../../../../hooks/useProfileUpdate.jsx";
 
 const CitizenProfile = () => {
@@ -62,11 +63,13 @@ const CitizenProfile = () => {
                 <div className="card bg-base-100 shadow items-center mb-6">
                     <div className="card-body w-full">
                         <div className="flex items-center mx-auto gap-4">
-                            <div className="avatar">
-                                <div className="w-16 rounded-full border">
-                                    <img src={profile?.photoURL} alt={profile?.displayName} />
-                                </div>
-                            </div>
+                            <UserAvatar photoURL={profile?.photoURL}
+                                        name={profile?.displayName}
+                                        w="w-16"
+                                        h="w-16"
+                                        radius="rounded-full"
+                                        border="border" />
+
                             <div className="flex-1">
                                 <div className="font-semibold flex items-center gap-2 flex-wrap">
                                     <span>{profile?.displayName}</span>

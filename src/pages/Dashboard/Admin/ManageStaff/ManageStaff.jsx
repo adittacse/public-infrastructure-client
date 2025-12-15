@@ -7,6 +7,7 @@ import useAuth from "../../../../hooks/useAuth.jsx";
 import useRole from "../../../../hooks/useRole.jsx";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../../../../components/Loading/Loading.jsx";
+import UserAvatar from "../../../../components/UserAvatar/UserAvatar.jsx";
 import Swal from "sweetalert2";
 
 // second auth for create new staff user
@@ -60,7 +61,6 @@ const ManageStaff = () => {
         setSelectedStaff(staff);
         staffModalRef.current.showModal();
     };
-
 
     const handleRegisterStaff = (staffName, staffImage, staffEmail, staffPassword) => {
         createUserWithEmailAndPassword(secondaryAuth, staffEmail, staffPassword)
@@ -222,7 +222,7 @@ const ManageStaff = () => {
         });
     };
 
-    if (!staffList) {
+    if (isLoading || !staffList) {
         return <Loading />;
     }
 
@@ -271,11 +271,7 @@ const ManageStaff = () => {
                                 <td>{index + 1}</td>
                                 <td>
                                     <div className="flex items-center gap-2">
-                                        <div className="avatar">
-                                            <div className="mask mask-squircle h-12 w-12">
-                                                <img src={staff?.photoURL} alt={staff?.displayName} />
-                                            </div>
-                                        </div>
+                                        <UserAvatar photoURL={staff?.photoURL} name={staff?.displayName} />
                                         <span>{staff?.displayName}</span>
                                     </div>
                                 </td>

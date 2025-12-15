@@ -4,7 +4,7 @@ const Features = () => {
     return (
         <section className="py-10 bg-base-100">
             <div className="max-w-6xl mx-auto px-4">
-                <h2 className="text-3xl font-bold mb-4">Key Features</h2>
+                <h2 className="text-3xl font-bold text-center mb-8">Key Features</h2>
 
                 <div className="grid md:grid-cols-3 gap-4">
                     <div className="card bg-base-200 p-4">

@@ -3,6 +3,7 @@ import useAxiosSecure from "../../../../hooks/useAxiosSecure.jsx";
 import useRole from "../../../../hooks/useRole.jsx";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../../../../components/Loading/Loading.jsx";
+import UserAvatar from "../../../../components/UserAvatar/UserAvatar.jsx";
 import Swal from "sweetalert2";
 
 const ManageUsers = () => {
@@ -136,7 +137,7 @@ const ManageUsers = () => {
         });
     }
 
-    if (!users) {
+    if (isLoading || !users) {
         return <Loading />;
     }
 
@@ -180,11 +181,7 @@ const ManageUsers = () => {
                             <td>{index + 1}</td>
                             <td>
                                 <div className="flex items-center gap-2">
-                                    <div className="avatar">
-                                        <div className="mask mask-squircle h-12 w-12">
-                                            <img src={user?.photoURL} alt={user?.displayName} />
-                                        </div>
-                                    </div>
+                                    <UserAvatar photoURL={user?.photoURL} name={user?.displayName} />
                                     <div>
                                         <div className="font-bold">{user?.displayName}</div>
                                         <div className="text-sm opacity-50">{user?.email}</div>

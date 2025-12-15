@@ -4,6 +4,7 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import useRole from "../../../../hooks/useRole.jsx";
 import useAxiosSecure from "../../../../hooks/useAxiosSecure.jsx";
 import Loading from "../../../../components/Loading/Loading.jsx";
+import UserAvatar from "../../../../components/UserAvatar/UserAvatar.jsx";
 import { FaBangladeshiTakaSign } from "react-icons/fa6";
 import InvoiceDocument from "../../../../components/Invoice/InvoiceDocument.jsx";
 
@@ -13,7 +14,7 @@ const AdminAllPayments = () => {
     const { role } = useRole();
     const axiosSecure = useAxiosSecure();
 
-    const { data: payments = [], isFetching } = useQuery({
+    const { data: payments = [], isLoading, isFetching } = useQuery({
         queryKey: ["admin-payments", searchText, paymentType],
         enabled: role === "admin",
         queryFn: async () => {
@@ -22,7 +23,7 @@ const AdminAllPayments = () => {
         }
     });
 
-    if (!payments) {
+    if (isLoading) {
         return <Loading />;
     }
 
@@ -61,8 +62,7 @@ const AdminAllPayments = () => {
                         <tr>
                             <th>Sl.</th>
                             <th>Customer</th>
-                            <th>Amount</th>
-                            <th>Type</th>
+                            <th>Type & Amount</th>
                             <th>Issue / Subscription</th>
                             <th>Date</th>
                             <th>Transaction Id</th>
@@ -85,9 +85,7 @@ const AdminAllPayments = () => {
                                     <div className="flex items-center gap-3">
                                         <div className="avatar">
                                             <div className="mask mask-squircle h-12 w-12">
-                                                <img
-                                                    src={payment?.customerImage}
-                                                    alt={payment?.customerName} />
+                                                <UserAvatar photoURL={payment?.customerImage} name={payment?.customerName} />
                                             </div>
                                         </div>
                                         <div>
@@ -97,12 +95,8 @@ const AdminAllPayments = () => {
                                     </div>
                                 </td>
                                 <td>
-                                    <span className="flex items-center">
-                                        {payment?.amount} <FaBangladeshiTakaSign />
-                                    </span>
-                                </td>
-                                <td className="capitalize">
-                                    {payment?.paymentType.split("_").join(" ")}
+                                    <p className="capitalize">{payment?.paymentType.split("_").join(" ")}</p>
+                                    <p className="flex items-center">{payment?.amount} <FaBangladeshiTakaSign /></p>
                                 </td>
                                 <td>
                                     {payment?.issueTitle || "Profile"}

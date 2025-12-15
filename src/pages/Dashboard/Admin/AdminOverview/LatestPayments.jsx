@@ -1,4 +1,5 @@
 import Loading from "../../../../components/Loading/Loading.jsx";
+import { FaBangladeshiTakaSign } from "react-icons/fa6";
 
 const LatestPayments = ({ latestPayments }) => {
     if (!latestPayments) {
@@ -11,23 +12,24 @@ const LatestPayments = ({ latestPayments }) => {
                 <h2 className="card-title">Latest Payments</h2>
                 <div className="mt-2 space-y-2">
                     {
-                        latestPayments.length === 0 && <p className="text-sm text-gray-500">
-                            No recent payments.
-                        </p>
+                        latestPayments.length === 0 &&
+                            <p className="text-sm text-gray-500">
+                                No recent payments.
+                            </p>
                     }
                     {
-                        latestPayments.map((p) => <div key={p._id} className="border rounded-md p-2 text-sm flex flex-col gap-1">
+                        latestPayments.map((payment) => <div key={payment._id} className="border rounded-md p-2 text-sm flex flex-col gap-1">
                             <div className="flex justify-between">
                                 <span>
-                                    {p.customerEmail}
+                                    {payment?.customerEmail}
                                 </span>
-                                <span className="font-semibold">
-                                    {p.amount}৳
+                                <span className="font-semibold flex items-center">
+                                    {payment?.amount} <FaBangladeshiTakaSign />
                                 </span>
                             </div>
 
                             <div className="text-xs text-gray-500">
-                                {p.paymentType || "payment"}
+                                {payment?.paymentType || "payment"}
                             </div>
                         </div>)
                     }

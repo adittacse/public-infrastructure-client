@@ -47,18 +47,10 @@ const IssueDetails = () => {
     const issue = data?.issue;
     const logs = data?.timelines || [];
 
-    if (!issue) {
-        return (
-            <div className="p-6">
-                <p>Issue not found.</p>
-            </div>
-        );
-    }
-
-    const isOwner = issue.reporterEmail === user?.email;
-    const canEdit = isOwner && !isBlocked && issue.status === "pending";
+    const isOwner = issue?.reporterEmail === user?.email;
+    const canEdit = isOwner && !isBlocked && issue?.status === "pending";
     const canDelete = isOwner && !isBlocked;
-    const canBoost = isOwner && !issue.isBoosted && !isBlocked;
+    const canBoost = isOwner && !issue?.isBoosted && !isBlocked;
 
     const handleBoost = async () => {
         const data = {

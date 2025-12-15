@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import IssueCard from "../../components/IssueCard/IssueCard.jsx";
+import Loading from "../../components/Loading/Loading.jsx";
 
 const LatestResolved = () => {
     const { user } = useAuth();
@@ -58,42 +59,35 @@ const LatestResolved = () => {
             });
     };
 
+    if (isLoading) {
+        return <Loading />;
+    }
+
     return (
         <section className="max-w-6xl mx-auto px-4 py-10">
-            <div className="flex items-center justify-between mb-6">
-                <h2 className="text-3xl font-bold">Latest Resolved Issues</h2>
+            <h2 className="text-3xl font-bold text-center mb-8">Latest Resolved Issues</h2>
 
-                <button
-                    onClick={() => navigate("/all-issues")}
-                    className="btn btn-ghost btn-sm"
-                >
-                    View All
-                </button>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {
+                    latestIssues.map((issue) => <IssueCard key={issue._id}
+                        issue={issue}
+                        onUpvote={handleUpvote}
+                    />)
+                }
+                {
+                    latestIssues.length === 0 && (
+                        <p className="text-gray-500">
+                            No resolved issues found yet.
+                        </p>
+                    )
+                }
             </div>
 
-            {
-                isLoading ? (
-                    <div className="flex justify-center">
-                        <span className="loading loading-spinner loading-lg"></span>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {
-                            latestIssues.map((issue) => <IssueCard key={issue._id}
-                                issue={issue}
-                                onUpvote={handleUpvote}
-                            />)
-                        }
-                        {
-                            latestIssues.length === 0 && (
-                                <p className="text-gray-500">
-                                    No resolved issues found yet.
-                                </p>
-                            )
-                        }
-                    </div>
-                )
-            }
+            <div className="flex justify-center mt-10">
+                <button onClick={() => navigate("/all-issues")} className="btn btn-primary">
+                    All Issues
+                </button>
+            </div>
         </section>
     );
 };

@@ -29,7 +29,7 @@ const AdminAllIssues = () => {
     });
 
     // all issues including filter
-    const { data: issues = [], isFetching, refetch } = useQuery({
+    const { data: issues = [], isLoading, isFetching, refetch } = useQuery({
         queryKey: ["admin-issues", status, priority, category, searchText],
         enabled: role === "admin",
         keepPreviousData: true,
@@ -122,7 +122,7 @@ const AdminAllIssues = () => {
         });
     };
 
-    if (!issues) {
+    if (isLoading) {
         return <Loading />;
     }
 

@@ -4,6 +4,7 @@ import useAuth from "../../../../hooks/useAuth.jsx";
 import useRole from "../../../../hooks/useRole.jsx";
 import useAxiosSecure from "../../../../hooks/useAxiosSecure.jsx";
 import Loading from "../../../../components/Loading/Loading.jsx";
+import UserAvatar from "../../../../components/UserAvatar/UserAvatar.jsx";
 import useProfileUpdate from "../../../../hooks/useProfileUpdate.jsx";
 
 const StaffProfile = () => {
@@ -45,11 +46,13 @@ const StaffProfile = () => {
                 <div className="card bg-base-100 shadow-xl rounded-2xl items-center mb-10">
                     <div className="card-body">
                         <div className="flex items-center gap-4">
-                            <div className="avatar">
-                                <div className="w-16 rounded-full border">
-                                    <img src={profile?.photoURL} alt={profile?.displayName} />
-                                </div>
-                            </div>
+                            <UserAvatar photoURL={profile?.photoURL}
+                                        name={profile?.displayName}
+                                        w="w-16"
+                                        h="w-16"
+                                        radius="rounded-full"
+                                        border="border" />
+
                             <div>
                                 <div className="font-semibold">
                                     {profile?.displayName}

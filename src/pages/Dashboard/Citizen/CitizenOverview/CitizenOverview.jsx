@@ -38,7 +38,7 @@ const CitizenOverview = () => {
         .slice()
         .reverse()
         .map((payment, index) => ({
-            name: new Date(payment?.paidAt).toLocaleDateString("en-GB", {
+            name: new Date(payment?.paidAt)?.toLocaleDateString("en-BD", {
                 day: "2-digit",
                 month: "short",
             }),
