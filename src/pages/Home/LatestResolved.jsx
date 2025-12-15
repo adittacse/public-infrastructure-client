@@ -59,7 +59,7 @@ const LatestResolved = () => {
     };
 
     return (
-        <section className="py-10 max-w-6xl mx-auto px-4">
+        <section className="max-w-6xl mx-auto px-4 py-10">
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-3xl font-bold">Latest Resolved Issues</h2>
 
