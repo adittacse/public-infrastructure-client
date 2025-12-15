@@ -35,7 +35,7 @@ const AdminAllPayments = () => {
             <div className="flex flex-wrap gap-2 mb-5 items-center">
                 <input
                     type="text"
-                    placeholder="Filter by customer name / email / transaction id"
+                    placeholder="Filter by name / email / transaction id"
                     className="input input-bordered"
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}

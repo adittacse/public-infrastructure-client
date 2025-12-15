@@ -48,7 +48,7 @@ const AdminProfile = () => {
                             <UserAvatar photoURL={profile?.photoURL}
                                         name={profile?.displayName}
                                         w="w-16"
-                                        h="w-16"
+                                        h="h-16"
                                         radius="rounded-full"
                                         border="border" />
 

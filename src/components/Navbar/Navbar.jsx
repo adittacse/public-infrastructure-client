@@ -4,6 +4,7 @@ import useRole from "../../hooks/useRole.jsx";
 import { useEffect, useState } from "react";
 import { IoMdMoon } from "react-icons/io";
 import { IoSunnySharp } from "react-icons/io5";
+import UserAvatar from "../UserAvatar/UserAvatar.jsx";
 import Swal from "sweetalert2";
 
 const Navbar = () => {
@@ -112,10 +113,14 @@ const Navbar = () => {
 
                 {
                     user ? <div className="dropdown dropdown-end">
-                        <div tabIndex={0} className="btn btn-ghost btn-circle avatar mr-2">
-                            <div className="w-10 rounded-full border">
-                                <img src={user?.photoURL} alt="user"/>
-                            </div>
+                        <div tabIndex={0} className="btn btn-ghost btn-circle mr-2">
+                        <UserAvatar photoURL={user?.photoURL}
+                                    name={user?.displayName}
+                                    w="w-10"
+                                    h="h-10"
+                                    radius="rounded-full"
+                                    border="border" />
+
                         </div>
                         <ul tabIndex={0} className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
                             <li className="mb-1 px-2">

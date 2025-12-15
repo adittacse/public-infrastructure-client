@@ -12,7 +12,7 @@ const ManageUsers = () => {
     const axiosSecure = useAxiosSecure();
     const { role } = useRole();
 
-    const { data: users = [], isLoading, refetch } = useQuery({
+    const { data: users = [], refetch } = useQuery({
         queryKey: ["all-users", searchText],
         enabled: role === "admin",
         queryFn: async () => {
@@ -137,7 +137,7 @@ const ManageUsers = () => {
         });
     }
 
-    if (isLoading || !users) {
+    if (!users) {
         return <Loading />;
     }
 
@@ -182,6 +182,7 @@ const ManageUsers = () => {
                             <td>
                                 <div className="flex items-center gap-2">
                                     <UserAvatar photoURL={user?.photoURL} name={user?.displayName} />
+
                                     <div>
                                         <div className="font-bold">{user?.displayName}</div>
                                         <div className="text-sm opacity-50">{user?.email}</div>

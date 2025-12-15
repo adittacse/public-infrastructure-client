@@ -36,7 +36,7 @@ const ManageStaff = () => {
         formState: {errors}
     } = useForm();
 
-    const { data: staffList = [], isLoading, refetch, isFetching } = useQuery({
+    const { data: staffList = [], refetch, isFetching } = useQuery({
         queryKey: ["admin-manage-staff", searchText],
         enabled: role === "admin",
         queryFn: async () => {
@@ -222,7 +222,7 @@ const ManageStaff = () => {
         });
     };
 
-    if (isLoading || !staffList) {
+    if (!staffList) {
         return <Loading />;
     }
 

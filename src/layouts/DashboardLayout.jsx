@@ -176,6 +176,17 @@ const DashboardLayout = () => {
                             </NavLink>
 
                             <NavLink
+                                to="/dashboard/manage-admins"
+                                className={({ isActive }) =>
+                                    `btn btn-sm btn-block justify-start ${
+                                        isActive ? "btn-primary" : "btn-ghost"
+                                    }`
+                                }
+                            >
+                                See Admins
+                            </NavLink>
+
+                            <NavLink
                                 to="/dashboard/all-payments"
                                 className={({ isActive }) =>
                                     `btn btn-sm btn-block justify-start ${

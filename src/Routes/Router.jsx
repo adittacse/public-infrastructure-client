@@ -27,6 +27,7 @@ import Profile from "../pages/Dashboard/Profile/Profile.jsx";
 import AllIssues from "../pages/Issues/AllIssues.jsx";
 import Pricing from "../pages/Pricing/Pricing.jsx";
 import HelpCenter from "../pages/HelpCenter/HelpCenter.jsx";
+import ManageAdmins from "../pages/Dashboard/Admin/ManageAdmins/ManageAdmins.jsx";
 
 const Router = createBrowserRouter([
     {
@@ -114,6 +115,10 @@ const Router = createBrowserRouter([
             {
                 path: "manage-staff",
                 element: <AdminRoute><ManageStaff /></AdminRoute>
+            },
+            {
+                path: "manage-admins",
+                element: <AdminRoute><ManageAdmins /></AdminRoute>
             },
             {
                 path: "all-payments",
