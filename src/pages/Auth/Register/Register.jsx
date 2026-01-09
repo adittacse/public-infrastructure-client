@@ -105,8 +105,7 @@ const Register = () => {
                     <fieldset className="fieldset">
                         {/* name */}
                         <label className="label">Name</label>
-                        <input {...register("name", {required: true})} type="text" className="input w-full"
-                               placeholder="Name"/>
+                        <input {...register("name", {required: true})} type="text" className="input w-full" />
                         {errors.name?.type === "required" &&
                             <p className="text-red-500 font-medium">Name is Required</p>}
 
@@ -123,8 +122,7 @@ const Register = () => {
 
                         {/* email */}
                         <label className="label">Email</label>
-                        <input {...register("email", {required: true})} type="email" className="input w-full"
-                               placeholder="Email"/>
+                        <input {...register("email", {required: true})} type="email" className="input w-full" />
                         {errors.email?.type === "required" &&
                             <p className="text-red-500 font-medium">Email is Required</p>}
 
@@ -134,7 +132,7 @@ const Register = () => {
                             required: true,
                             minLength: 6,
                             pattern: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.[A-Za-z0-9]).+$/
-                        })} type="password" className="input w-full" placeholder="Password"/>
+                        })} type="password" className="input w-full" />
                         {errors.password?.type === "required" &&
                             <p className="text-red-500 font-medium">Password is Required</p>}
                         {errors.password?.type === "minLength" &&

@@ -38,12 +38,12 @@ const Login = () => {
                     <fieldset className="fieldset">
                         {/* email */}
                         <label className="label">Email</label>
-                        <input {...register("email", { required: true })} type="email" className="input w-full" placeholder="Email" />
+                        <input {...register("email", { required: true })} type="email" className="input w-full" />
                         { errors.email?.type === "required" && <p className="text-red-500 font-medium">Email is Required</p> }
 
                         {/* password */}
                         <label className="label">Password</label>
-                        <input {...register("password", { required: true, minLength: 6 })} type="password" className="input w-full" placeholder="Password" />
+                        <input {...register("password", { required: true, minLength: 6 })} type="password" className="input w-full" />
                         { errors.password?.type === "required" && <p className="text-red-500 font-medium">Password is Required</p> }
                         { errors.password?.type === "minLength" && <p className="text-red-500 font-medium">Password must be at least 6 character</p> }
 

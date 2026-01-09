@@ -165,8 +165,7 @@ const ManageCategories = () => {
                             <label className="label mb-1">
                                 <span className="label-text">Category Name</span>
                             </label>
-                            <input {...register("categoryName", { required: true })} type="text" placeholder="Type category name"
-                                   className="input input-bordered w-full" />
+                            <input {...register("categoryName", { required: true })} type="text" className="input input-bordered w-full" />
                             {errors.categoryName?.type === "required" &&
                                 <p className="text-red-500 font-medium">Category Name is Required</p>}
 
