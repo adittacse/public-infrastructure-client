@@ -54,7 +54,7 @@ const Router = createBrowserRouter([
             {
                 path: "issues/:id",
                 loader: ({ params }) => fetch(`/issues/${params.id}`),
-                element: <PrivateRoute><IssueDetails /></PrivateRoute>
+                element: <IssueDetails />
             },
             {
                 path: "pricing",

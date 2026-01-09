@@ -347,6 +347,19 @@ const IssueDetails = () => {
                             </div>
                         </div>
                     }
+
+                    {
+                        !role && <div className="card bg-base-100 shadow-md">
+                            <div className="card-body">
+                                <h3 className="font-semibold">
+                                    Visitors Panel
+                                </h3>
+                                <p className="text-xs text-gray-500">
+                                    Only owner can use this action panel.
+                                </p>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
 
