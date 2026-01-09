@@ -97,7 +97,7 @@ const Register = () => {
     }
 
     return (
-        <div className="card bg-base-100 w-3/12 mx-auto shadow-2xl shrink-0 my-5">
+        <div className="card bg-base-100 w-10/12 md:w-6/12 lg:w-3/12 mx-auto shadow-2xl shrink-0 my-5">
             <div className="card-body">
                 <h3 className="text-4xl font-bold text-center mb-1">Create an Account</h3>
 
