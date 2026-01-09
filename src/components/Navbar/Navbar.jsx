@@ -121,7 +121,7 @@ const Navbar = () => {
                 {
                     user ? <div className="dropdown dropdown-end">
                         <div tabIndex={0} className="btn btn-ghost btn-circle mr-2">
-                        <UserAvatar photoURL={user?.photoURL}
+                        <UserAvatar photoURL={user?.providerData[0]?.photoURL || user?.photoURL}
                                     name={user?.displayName}
                                     w="w-10"
                                     h="h-10"

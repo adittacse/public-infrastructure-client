@@ -10,7 +10,7 @@ Admins & staff members can manage issues efficiently with real-time workflow too
 ---
 
 ## 🔐 Admin Login Credentials  
-- **Admin Email:** adittacse@gmail.com 
+- **Admin Email:** cseaditta@gmail.com 
 - **Admin Password:** Aditta@#56
 
 ---
@@ -18,6 +18,12 @@ Admins & staff members can manage issues efficiently with real-time workflow too
 ## 🔐 Staff Login Credentials
 - **Staff Email:** johndoe@gmail.com
 - **Staff Password:** JohnDoe12#
+
+---
+
+## 🔐 User Login Credentials
+- **User Email:** imoonmazumder006@gmail.com
+- **User Password:** Imoon12@#
 
 ---
 

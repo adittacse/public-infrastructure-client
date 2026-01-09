@@ -40,7 +40,7 @@ const SocialLogin = () => {
     }
 
     return (
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center mb-5">
             <p className="text-center mb-3">Or</p>
 
             {/* Google */}

@@ -29,6 +29,57 @@ const Login = () => {
             });
     }
 
+    const handleDemoAdminLogin = () => {
+        const email = "cseaditta@gmail.com";
+        const password = "Aditta@#56";
+        signInUser(email, password)
+            .then((result) => {
+                setUser(result.user);
+                navigate(location?.state || "/", { replace: true });
+            })
+            .catch((error) => {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: `${error.message}`
+                });
+            });
+    }
+
+    const handleDemoStaffLogin = () => {
+        const email = "johndoe@gmail.com";
+        const password = "JohnDoe12#";
+        signInUser(email, password)
+            .then((result) => {
+                setUser(result.user);
+                navigate(location?.state || "/", { replace: true });
+            })
+            .catch((error) => {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: `${error.message}`
+                });
+            });
+    }
+
+    const handleDemoUserLogin = () => {
+        const email = "imoonmazumder006@gmail.com";
+        const password = "Imoon12@#";
+        signInUser(email, password)
+            .then((result) => {
+                setUser(result.user);
+                navigate(location?.state || "/", { replace: true });
+            })
+            .catch((error) => {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: `${error.message}`
+                });
+            });
+    }
+
     return (
         <div className="card bg-base-100 w-10/12 md:w-6/12 lg:w-3/12 mx-auto shadow-2xl shrink-0 my-5">
             <div className="card-body">
@@ -55,6 +106,12 @@ const Login = () => {
                 <p className="text-zinc-500">Don’t have any account? <Link state={location?.state} to="/register" className="link link-hover text-green-8">Register</Link></p>
 
                 <SocialLogin />
+
+                <div className="flex justify-evenly">
+                    <button onClick={handleDemoAdminLogin} className="btn btn-sm btn-primary">Admin Login</button>
+                    <button onClick={handleDemoStaffLogin} className="btn btn-sm btn-neutral">Staff Login</button>
+                    <button onClick={handleDemoUserLogin} className="btn btn-sm btn-warning">User Login</button>
+                </div>
             </div>
         </div>
     );
