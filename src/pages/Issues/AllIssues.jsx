@@ -18,6 +18,7 @@ const AllIssues = () => {
     const [priority, setPriority] = useState("");
     const [category, setCategory] = useState("");
     const [location, setLocation] = useState("");
+    const [sortBy, setSortBy] = useState("newest");
 
     const axiosInstance = useAxios();
     const axiosSecure = useAxiosSecure();
@@ -26,11 +27,11 @@ const AllIssues = () => {
 
     const safeLimit = limit === 0 ? 0 : limit > 0 ? limit : 10;
 
-    const { data, refetch } = useQuery({
-        queryKey: ["issues", currentPage, safeLimit, search, status, priority, category, location],
+    const { data, refetch, isFetching } = useQuery({
+        queryKey: ["issues", currentPage, safeLimit, search, status, priority, category, location, sortBy],
         placeholderData: keepPreviousData,
         queryFn: async () => {
-            const url = `/issues?page=${currentPage}&limit=${safeLimit}&search=${search}&status=${status}&priority=${priority}&category=${category}&location=${location}`;
+            const url = `/issues?page=${currentPage}&limit=${safeLimit}&search=${search}&status=${status}&priority=${priority}&category=${category}&location=${location}&sortBy=${sortBy}`;
             const res = await axiosInstance.get(url);
             const data = res.data || {};
 
@@ -114,7 +115,7 @@ const AllIssues = () => {
             });
     };
 
-    if (!data) {
+    if (!data || isFetching) {
         return <Loading />;
     }
 
@@ -220,9 +221,25 @@ const AllIssues = () => {
             </div>
 
             {/* count info */}
-            <p className="mb-4 text-sm text-gray-600">
-                ({pagination.total}) issues found
-            </p>
+            <div className="flex items-center justify-between mb-5">
+                <p className="mb-4 text-sm text-gray-600">
+                    ({pagination.total}) issues found
+                </p>
+
+                <select
+                    className="select select-bordered"
+                    value={sortBy}
+                    onChange={(e) => {
+                        setCurrentPage(1);
+                        setSortBy(e.target.value);
+                    }}
+                >
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="upvotes">Most Upvoted</option>
+                    <option value="priority">High Priority First</option>
+                </select>
+            </div>
 
             {/* list */}
             {
@@ -231,7 +248,7 @@ const AllIssues = () => {
                         No issues found.
                     </p>
                 </> : <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
                         {
                             issues.map((issue) => <IssueCard key={issue._id}
                                                              issue={issue}
